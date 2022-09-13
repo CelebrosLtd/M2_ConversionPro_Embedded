@@ -16,13 +16,13 @@ use Magento\Framework\View\Element\Template;
 
 class View extends Template
 {
-    CONST ANALYTICS_JS_PATH = '/widgets/CelebrosToolbox.js'; 
-    
+    CONST ANALYTICS_JS_PATH = '/widgets/CelebrosToolbox.js';
+
     public $helper;
     public $searchHelper;
     public $registry;
     public $url;
-    
+
     public function __construct(
         Template\Context $context,
         \Celebros\ConversionPro\Helper\Data $helper,
@@ -36,7 +36,7 @@ class View extends Template
         $this->url = $context->getUrlBuilder();
         parent::__construct($context, $data);
     }
-    
+
     /**
      * Sets parameters for tempalte
      *
@@ -46,7 +46,7 @@ class View extends Template
     {
         $this->setCustomerId($this->helper->getAnalyticsCustId());
         $this->setHost($this->helper->getAnalyticsHost());
-        
+
         $product = $this->getProduct();
         //Set product click tracking params
         if (isset($product)) {
@@ -54,7 +54,7 @@ class View extends Template
             $this->setProductName(str_replace("'", "\'", $product->getName()));
             $this->setProductPrice($product->getFinalPrice());
             $webSessionId = isset($_SESSION['core']['visitor_data']['session_id']) ? $_SESSION['core']['visitor_data']['session_id'] : session_id();
-            $this->setWebsessionId($webSessionId);      
+            $this->setWebsessionId($webSessionId);
         } else {
             $pageReferrer = $this->url->getUrl('*/*/*', array('_current' => TRUE));
             $this->setPageReferrer($pageReferrer);
@@ -63,28 +63,28 @@ class View extends Template
             $webSessionId = isset($_SESSION['core']['visitor_data']['session_id']) ? $_SESSION['core']['visitor_data']['session_id'] : session_id();
             $this->setWebsessionId($webSessionId);
         }
-        
+
         return parent::_prepareLayout();
     }
-    
+
     protected function _generateGUID()
     {
         global $SERVER_ADDR;
-        
+
         // get the current ip, and convert it to its positive long value
-        $long_ip = ip2long($SERVER_ADDR);
+        $long_ip = ip2long((string)$SERVER_ADDR);
         if($long_ip < 0) $long_ip += pow(2,32);
-        
+
         // get the current microtime and make sure it's a positive long value
         $time = microtime();
         if($time < 0)
         {
             $time += pow(2,32);
         }
-        
+
         // put those strings together
         $combined = $long_ip . $time;
-        
+
         // md5 it and throw in some dashes for easy checking
         $guid = md5($combined);
         $guid = substr($guid, 0, 8) . "-" .
@@ -92,10 +92,10 @@ class View extends Template
         substr($guid, 12, 4) . "-" .
         substr($guid, 16, 4) . "-" .
         substr($guid, 20);
-        
+
         return $guid;
     }
-    
+
     /**
      * Retrieve current product model
      *
@@ -105,19 +105,19 @@ class View extends Template
     {
         return $this->registry->registry('current_product');
     }
-    
+
     public function getQwiserSearchLogHandle()
     {
         if (is_object($results = $this->searchHelper->getCurrentCustomResults())) {
             return $results->QwiserSearchResults->getAttribute('LogHandle');
         }
-        
+
         return FALSE;
     }
-    
+
     public function getJsPath()
     {
         return self::ANALYTICS_JS_PATH;
     }
-    
+
 }
