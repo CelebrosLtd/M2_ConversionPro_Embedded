@@ -34,7 +34,7 @@ class TestConnection extends Action
      * @var JsonFactory
      */
     private $resultJsonFactory;
-    
+
     /**
      * @var Magento\Framework\Json\Helper\Data
      */
@@ -44,12 +44,12 @@ class TestConnection extends Action
      * @var StripTags
      */
     private $tagFilter;
-    
+
     /**
      * @var Search
      */
     private $searchModel;
-    
+
     /**
      * @var Curl
      */
@@ -88,7 +88,7 @@ class TestConnection extends Action
             'success' => false,
             'errorMessage' => '',
         ];
-        
+
         $params = $this->getRequest()->getParams();
 
         try {
@@ -101,17 +101,17 @@ class TestConnection extends Action
             }
 
             $testUrl = $this->prepareTestUrl($params);
-            
+
             $this->curl->setOption(CURLOPT_HTTPHEADER, array('Accept: text/xml'));
             $this->curl->get($testUrl, []);
-            
+
             $responseBody = $this->searchModel->parseXmlResponse($this->curl->getBody());
             if ($responseBody) {
                 $result['success'] = true;
                 unset($result['errorMessage']);
                 $result['responseBody'] = $this->json->jsonEncode(
                     $responseBody
-                );    
+                );
             }
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $result['errorMessage'] = $e->getMessage();
@@ -124,14 +124,14 @@ class TestConnection extends Action
         $resultJson = $this->resultJsonFactory->create();
         return $resultJson->setData($result);
     }
-    
+
     protected function prepareTestUrl($params)
-    {   
+    {
         return sprintf(
             '%s:%s/GetAllQuestions?Sitekey=%s',
-            $params['host'],
-            $params['port'],
-            $params['sitekey']
+            $params['host'] ?? '',
+            $params['port'] ?? '',
+            $params['sitekey'] ?? ''
         );
     }
 }

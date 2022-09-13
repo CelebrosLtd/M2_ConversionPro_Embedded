@@ -20,9 +20,9 @@ use Magento\Framework\App\Helper;
 class Analytics extends Helper\AbstractHelper
 {
     const ANALYTICS_URL_PATH = 'ai.celebros-analytics.com/AIWriter/WriteLog.ashx';
-    
+
     protected $_urlParams = [];
-    
+
     public function __construct(
         Context $context,
         \Celebros\ConversionPro\Helper\Data $helper,
@@ -32,15 +32,15 @@ class Analytics extends Helper\AbstractHelper
         $this->curl = $curl;
         $this->setUrlParam('type', 'SR');
         $this->setUrlParam('responseType', 'JSON');
-        
+
         parent::__construct($context);
     }
-    
+
     public function getProtocol()
     {
         return $this->_getRequest()->isSecure() ? 'https' : 'http';
     }
-    
+
     public function setUrlParam($name, $value)
     {
         $this->_urlParams[$name] = $value;
@@ -49,17 +49,17 @@ class Analytics extends Helper\AbstractHelper
     protected function _generateGUID()
     {
         global $SERVER_ADDR;
-        
-        $long_ip = ip2long($SERVER_ADDR);
+
+        $long_ip = ip2long((string)$SERVER_ADDR);
         if ($long_ip < 0) {
             $long_ip += pow(2, 32);
         }
-        
+
         $time = microtime();
         if ($time < 0) {
             $time += pow(2, 32);
         }
-        
+
         $combined = $long_ip . $time;
         $guid = md5($combined);
         $guid = substr($guid, 0, 8) . "-" .
@@ -67,20 +67,20 @@ class Analytics extends Helper\AbstractHelper
         substr($guid, 12, 4) . "-" .
         substr($guid, 16, 4) . "-" .
         substr($guid, 20);
-        
+
         return $guid;
     }
-    
+
     public function getParamsToUrl()
     {
         $result = [];
         foreach ($this->_urlParams as $param => $value) {
             $result[] = $param . '=' . $value;
         }
-        
+
         return implode('&', $result);
     }
-    
+
     public function sendAnalyticsRequest(\Magento\Framework\Simplexml\Element $results)
     {
         $host = $this->helper->getAnalyticsHost();
@@ -103,15 +103,15 @@ class Analytics extends Helper\AbstractHelper
         } catch (\Exception $e) {
             return false;
         }
-        
+
         return true;
     }
-    
+
     public function parseAnalyticsResponse($body)
     {
         return json_decode(str_replace(['anlxCallback(',');'], '', $body));
     }
-    
+
     public function getQwiserSearchLogHandle(\Magento\Framework\Simplexml\Element $results)
     {
         return $results->QwiserSearchResults->getAttribute('LogHandle');

@@ -347,7 +347,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ScopeInterface::SCOPE_STORE,
             $store
         );
-        $campaignsTypes = explode(',', $this->scopeConfig->getValue(
+        $campaignsTypes = explode(',', (string)$this->scopeConfig->getValue(
             self::XML_PATH_CAMPAIGNS_TYPE,
             ScopeInterface::SCOPE_STORE,
             $store
@@ -560,7 +560,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getFilterType($store = null): array
     {
-        return explode(',', $this->scopeConfig->getValue(
+        return explode(',', (string)$this->scopeConfig->getValue(
             self::XML_PATH_PRICE_FILTER_TYPE,
             ScopeInterface::SCOPE_STORE,
             $store
@@ -623,7 +623,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 return $priceValue;
             }
 
-            return array_map('intval', explode(',', $value));
+            return array_map('intval', explode(',', (string)$value));
         }
 
         return (array)$value;
@@ -631,7 +631,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function validateAndPreparePriceAnswer($value)
     {
-        $array = explode("_", $value);
+        $array = explode("_", (string)$value);
         if (count($array) == 3
             && (bool)$array[0] == false
             && strpos($array[1], "P") !== false
