@@ -7,7 +7,8 @@ define([
             filtersList: "#narrow-by-list .filter-options-content",
             li: "li",
             ignoredClasses: ['.swatch-attribute', '.celebros-price-layered'],
-            hideClass: "filtered"
+            hideClass: "filtered",
+            filterCountclasses: ['.count']
         };
         this._options = {
             minSearchFilterQty: 4,
@@ -54,8 +55,10 @@ define([
                         $(this).trigger(evName);
                         var lis = $(this).find(self.cssSelector.li);
                         for (var i = 0; i < lis.length; i++) {
-                            var name = $.trim($(lis[i]).find('a').text());
-                            if (name.toUpperCase().indexOf(filter) != -1) { 
+                            var liClone = $(lis[i]).find('a').clone();
+                            liClone.find(self.cssSelector.filterCountclasses.toString()).remove();
+                            var name = $.trim(liClone.text());
+                            if (name.toUpperCase().indexOf(filter) != -1) {
                                 $(lis[i]).removeClass(self.cssSelector.hideClass);
                             } else {
                                 $(lis[i]).addClass(self.cssSelector.hideClass);
