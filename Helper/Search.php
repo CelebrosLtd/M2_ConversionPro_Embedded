@@ -103,8 +103,6 @@ class Search extends Helper\AbstractHelper
 
             $params->setFilters($filters);
             $this->currentSearchParams = $params;
-
-            return $params;
         }
 
         return $this->currentSearchParams;
@@ -318,8 +316,8 @@ class Search extends Helper\AbstractHelper
     public function getCurrentCustomResults($handle = null)
     {
         if ($handle) {
-            if (isset($this->customResultsCache[$hanlde])) {
-                return $this->customResultsCache[$hanlde];
+            if (isset($this->customResultsCache[$handle])) {
+                return $this->customResultsCache[$handle];
             }
         }
 

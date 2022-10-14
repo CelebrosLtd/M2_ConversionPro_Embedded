@@ -12,16 +12,6 @@
  * @package     Celebros_ConversionPro
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <virtualType name="searchFilterList" type="Celebros\ConversionPro\Model\Catalog\Layer\Search\FilterList">
-        <arguments>
-            <argument name="filterableAttributes" xsi:type="object">Magento\Catalog\Model\Layer\Search\FilterableAttributeList</argument>
-        </arguments>
-    </virtualType>
-    <virtualType name="categoryFilterList" type="Celebros\ConversionPro\Model\Catalog\Layer\FilterList">
-        <arguments>
-            <argument name="filterableAttributes" xsi:type="object">Magento\Catalog\Model\Layer\Category\FilterableAttributeList</argument>
-        </arguments>
-    </virtualType>
     <preference for="Magento\CatalogSearch\Model\Search\RequestGenerator" type="Celebros\ConversionPro\Model\CatalogSearch\Search\RequestGenerator" />
     <preference for="Magento\Search\Model\AdapterFactory" type="Celebros\ConversionPro\Model\Search\AdapterFactory" />
     <preference for="Magento\Catalog\Block\Product\ProductList\Toolbar" type="Celebros\ConversionPro\Block\Catalog\Product\ProductList\Toolbar" />
@@ -88,5 +78,8 @@
                 <item name="conversionpro" xsi:type="string">conversionpro/advanced/request_show</item>
             </argument>
         </arguments>
+    </type>
+    <type name="Magento\Catalog\Model\Layer\FilterList">
+        <plugin name="ConversionProFilterListGetFilters" type="Celebros\ConversionPro\Plugin\Catalog\Model\Layer\FilterList" />
     </type>
 </config>
