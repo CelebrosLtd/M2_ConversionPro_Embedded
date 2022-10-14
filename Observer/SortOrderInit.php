@@ -56,6 +56,9 @@ class SortOrderInit implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
+        if (!($this->helper->isActiveEngine() && $this->helper->isPermittedHandle())) {
+            return;
+        }
         /** @var AbstractBlock $block */
         $block = $observer->getDataByKey('block');
         $this->initListProductBlock($block);
@@ -99,9 +102,7 @@ class SortOrderInit implements ObserverInterface
             $resultBlock->setListOrders();
         } else {
             $category = $this->listProductBlock->getLayer()->getCurrentCategory();
-            $availableOrders = $category->getAvailableSortByOptions();
-            unset($availableOrders['position']);
-            $availableOrders['relevance'] = __('Relevance');
+            $availableOrders = $this->replacePositionOrderByRelevance($category->getAvailableSortByOptions());
 
             $this->listProductBlock->setAvailableOrders(
                 $availableOrders
@@ -133,6 +134,13 @@ class SortOrderInit implements ObserverInterface
         );
         if ($this->listProductBlock->getSortBy() && $this->listProductBlock->getSortBy() == 'position') {
             $this->listProductBlock->setDefaultDirection('desc');
+        }
+
+        // replace 'Position' sorting by 'Relevance'
+        $availableOrders = $this->replacePositionOrderByRelevance($this->listProductBlock->getAvailableOrders());
+        $this->listProductBlock->setAvailableOrders($availableOrders);
+        if ($this->listProductBlock->getSortBy() == 'position') {
+            $this->listProductBlock->setSortBy('relevance');
         }
     }
 
@@ -172,5 +180,18 @@ class SortOrderInit implements ObserverInterface
             $block->getCurrentOrder(),
             $block->getCurrentDirection()
         );
+    }
+
+    /**
+     * Replace Position sorting option by Relevance
+     *
+     * @param array $orders
+     * @return array
+     */
+    protected function replacePositionOrderByRelevance($orders)
+    {
+        unset($orders['position']);
+        $orders['relevance'] = __('Relevance');
+        return $orders;
     }
 }
