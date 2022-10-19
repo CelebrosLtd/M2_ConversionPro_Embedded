@@ -1,34 +1,18 @@
 <?xml version="1.0"?>
 <!--
- * Celebros
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish correct extension functionality.
- * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
- -->
+  /**
+   * Celebros (C) 2022. All Rights Reserved.
+   *
+   * DISCLAIMER
+   *
+   * Do not edit or add to this file if you wish correct extension functionality.
+   * If you wish to customize it, please contact Celebros.
+   */
+  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <virtualType name="searchFilterList" type="Celebros\ConversionPro\Model\Catalog\Layer\Search\FilterList">
-        <arguments>
-            <argument name="filterableAttributes" xsi:type="object">Magento\Catalog\Model\Layer\Search\FilterableAttributeList</argument>
-        </arguments>
-    </virtualType>
-    <virtualType name="categoryFilterList" type="Celebros\ConversionPro\Model\Catalog\Layer\FilterList">
-        <arguments>
-            <argument name="filterableAttributes" xsi:type="object">Magento\Catalog\Model\Layer\Category\FilterableAttributeList</argument>
-        </arguments>
-    </virtualType>
-    <preference for="Magento\CatalogSearch\Model\Search\RequestGenerator" type="Celebros\ConversionPro\Model\CatalogSearch\Search\RequestGenerator" />
-    <preference for="Magento\Search\Model\AdapterFactory" type="Celebros\ConversionPro\Model\Search\AdapterFactory" />
-    <preference for="Magento\Catalog\Block\Product\ProductList\Toolbar" type="Celebros\ConversionPro\Block\Catalog\Product\ProductList\Toolbar" />
-    <preference for="Magento\Theme\Block\Html\Pager" type="Celebros\ConversionPro\Block\Theme\Html\Pager" />
-    <preference for="Magento\Catalog\Model\Layer\Filter\Item" type="Celebros\ConversionPro\Model\Catalog\Layer\Filter\Item" />
     <type name="Magento\Catalog\Model\ResourceModel\Product\Collection">
-        <plugin name="Celebros_ConversionPro_Fulltext_Collection" type="Celebros\ConversionPro\Plugin\Collection" sortOrder="10000" disabled="false"/>
+        <plugin name="CelebrosConversionProFulltextCollection" type="Celebros\ConversionPro\Plugin\Collection"
+                sortOrder="10000" disabled="false"/>
     </type>
 
     <virtualType name="Celebros\ConversionPro\Logger\Handler\Api" type="Magento\Framework\Logger\Handler\Base">
@@ -87,6 +71,135 @@
             <argument name="debugModules" xsi:type="array">
                 <item name="conversionpro" xsi:type="string">conversionpro/advanced/request_show</item>
             </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Catalog\Model\Layer\FilterList">
+        <plugin name="ConversionProFilterListGetFilters" type="Celebros\ConversionPro\Plugin\Catalog\Model\Layer\FilterList" />
+    </type>
+    <type name="Magento\Search\Model\AdapterFactory">
+        <arguments>
+            <argument name="adapters" xsi:type="array">
+                <item name="celebros" xsi:type="string">\Celebros\ConversionPro\Model\Search\Adapter\Celebros\Adapter</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\AdvancedSearch\Model\SuggestedQueries">
+        <arguments>
+            <argument name="data" xsi:type="array">
+                <item name="celebros" xsi:type="string">Magento\AdvancedSearch\Model\DataProvider\Suggestions</item>
+            </argument>
+        </arguments>
+    </type>
+
+
+    <!--    Tune Search provider -->
+    <virtualType name="celebrosFulltextSearchCollection"
+                 type="Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection">
+        <arguments>
+            <argument name="searchRequestName" xsi:type="string">quick_search_container</argument>
+            <argument name="searchCriteriaResolverFactory" xsi:type="object">
+                elasticsearchSearchCriteriaResolverFactory
+            </argument>
+            <argument name="searchResultApplierFactory" xsi:type="object">celebrosSearchResultApplier\Factory</argument>
+            <argument name="totalRecordsResolverFactory" xsi:type="object">celebrosTotalRecordsResolver\Factory
+            </argument>
+            <!-- @TODO possibly implement a new class for \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection\DefaultFilterStrategyApplyCheckerInterface  -->
+            <!--<argument name="defaultFilterStrategyApplyChecker" xsi:type="object">Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection\DefaultFilterStrategyApplyChecker</argument>-->
+        </arguments>
+    </virtualType>
+    <virtualType name="celebrosFulltextSearchCollectionFactory"
+                 type="Magento\CatalogSearch\Model\ResourceModel\Fulltext\SearchCollectionFactory">
+        <arguments>
+            <argument name="instanceName" xsi:type="string">celebrosFulltextSearchCollection</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="elasticsearchLayerSearchItemCollectionProvider">
+        <arguments>
+            <argument name="factories" xsi:type="array">
+                <item name="celebros" xsi:type="object">celebrosFulltextSearchCollectionFactory</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="celebrosCategoryCollection" type="Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection">
+        <arguments>
+            <argument name="searchRequestName" xsi:type="string">catalog_view_container</argument>
+            <argument name="searchCriteriaResolverFactory" xsi:type="object">
+                elasticsearchSearchCriteriaResolverFactory
+            </argument>
+            <argument name="searchResultApplierFactory" xsi:type="object">celebrosSearchResultApplier\Factory</argument>
+            <argument name="totalRecordsResolverFactory" xsi:type="object">celebrosTotalRecordsResolver\Factory
+            </argument>
+            <!-- @TODO possibly implement a new class for \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection\DefaultFilterStrategyApplyCheckerInterface  -->
+            <!--<argument name="defaultFilterStrategyApplyChecker" xsi:type="object">Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection\DefaultFilterStrategyApplyChecker</argument>-->
+        </arguments>
+    </virtualType>
+    <virtualType name="celebrosCategoryCollectionFactory"
+                 type="Magento\CatalogSearch\Model\ResourceModel\Fulltext\SearchCollectionFactory">
+        <arguments>
+            <argument name="instanceName" xsi:type="string">celebrosCategoryCollection</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="elasticsearchLayerCategoryItemCollectionProvider">
+        <arguments>
+            <argument name="factories" xsi:type="array">
+                <item name="celebros" xsi:type="object">celebrosCategoryCollectionFactory</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="celebrosAdvancedCollection" type="Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection">
+        <arguments>
+            <argument name="searchRequestName" xsi:type="string">advanced_search_container</argument>
+            <argument name="searchCriteriaResolverFactory" xsi:type="object">
+                elasticsearchSearchCriteriaResolverFactory
+            </argument>
+            <argument name="searchResultApplierFactory" xsi:type="object">celebrosSearchResultApplier\Factory</argument>
+            <argument name="totalRecordsResolverFactory" xsi:type="object">celebrosTotalRecordsResolver\Factory
+            </argument>
+            <!-- @TODO possibly implement a new class for \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection\DefaultFilterStrategyApplyCheckerInterface  -->
+            <!--<argument name="defaultFilterStrategyApplyChecker" xsi:type="object">Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection\DefaultFilterStrategyApplyChecker</argument>-->
+        </arguments>
+    </virtualType>
+    <virtualType name="celebrosAdvancedCollectionFactory"
+                 type="Magento\CatalogSearch\Model\ResourceModel\Advanced\CollectionFactory">
+        <arguments>
+            <argument name="instanceName" xsi:type="string">celebrosAdvancedCollection</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\CatalogSearch\Model\Search\ItemCollectionProvider">
+        <arguments>
+            <argument name="factories" xsi:type="array">
+                <item name="celebros" xsi:type="object">celebrosAdvancedCollectionFactory</item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="celebrosSearchResultApplier\Factory"
+                 type="Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection\SearchResultApplierFactory">
+        <arguments>
+            <argument name="instanceName" xsi:type="string">
+                Celebros\ConversionPro\Model\ResourceModel\Fulltext\Collection\SearchResultApplier
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="celebrosTotalRecordsResolver\Factory"
+                 type="Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection\TotalRecordsResolverFactory">
+        <arguments>
+            <argument name="instanceName" xsi:type="string">
+                Celebros\ConversionPro\Model\ResourceModel\Fulltext\Collection\TotalRecordsResolver
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\CatalogSearch\Model\Search\RequestGenerator">
+        <plugin name="CelebrosConversionProRequestGenerator"
+                type="Celebros\ConversionPro\Plugin\CatalogSearch\Model\Search\RequestGenerator"/>
+    </type>
+    <virtualType name="celebrosFilterItem\Factory" type="Magento\Catalog\Model\Layer\Filter\ItemFactory">
+        <arguments>
+            <argument name="instanceName" xsi:type="string">Celebros\ConversionPro\Model\Catalog\Layer\Filter\Item</argument>
+        </arguments>
+    </virtualType>
+    <type name="Celebros\ConversionPro\Model\Catalog\Layer\Filter\Question">
+        <arguments>
+            <argument name="filterItemFactory" xsi:type="object">celebrosFilterItem\Factory</argument>
         </arguments>
     </type>
 </config>

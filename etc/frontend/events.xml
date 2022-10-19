@@ -15,4 +15,7 @@
     <event name="layout_load_before">
         <observer name="celebros_conversionpro_layout_load_before" instance="Celebros\ConversionPro\Observer\LayoutLoadBefore" />
     </event>
+    <event name="core_layout_block_create_after">
+        <observer name="hawksearch_listproduct_initcollection" instance="Celebros\ConversionPro\Observer\SortOrderInit" />
+    </event>
 </config>

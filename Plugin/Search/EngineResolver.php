@@ -30,20 +30,18 @@ class EngineResolver
     }
 
     /**
-     * Returns MySQL search engine if Celebros search is enabled
+     * Returns 'celebros' search engine if Celebros search is enabled
      *
-     * @param \Magento\Search\Model\EngineResolver $resolver
-     * @param string $currentSearchEngine
+     * @param Resolver $resolver
+     * @param string $result
      * @return string
      */
-    public function afterGetCurrentSearchEngine(
-        Resolver $resolver,
-        $currentSearchEngine
-    ) {
+    public function afterGetCurrentSearchEngine(Resolver $resolver, $result)
+    {
         if ($this->helper->isActiveEngine() && $this->helper->isPermittedHandle()) {
-            $currentSearchEngine = $resolver::CATALOG_SEARCH_MYSQL_ENGINE;
+            $result = 'celebros';
         }
 
-        return $currentSearchEngine;
+        return $result;
     }
 }
