@@ -1,15 +1,11 @@
 <?php
 /**
- * Celebros
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 namespace Celebros\ConversionPro\Block\Catalog\Product\ProductList;
 
@@ -19,7 +15,7 @@ use Magento\Framework\Simplexml\Element as XmlElement;
 class Banner extends Template
 {
     const BANNER_CAMPAIGN_NAME = 'banners';
-    
+
     /**
      * @var \Celebros\ConversionPro\Helper\Data
      */
@@ -91,7 +87,7 @@ class Banner extends Template
             $params = $this->searchHelper->getSearchParams();
             $this->response = $this->searchHelper->getCustomResults($params);
         }
-        
+
         return $this->response;
     }
 
@@ -100,7 +96,7 @@ class Banner extends Template
         if (!$this->helper->isCampaignsEnabled(self::BANNER_CAMPAIGN_NAME)) {
             return;
         }
-        
+
         if ($this->isResponseParsed) {
             return;
         }
@@ -110,7 +106,7 @@ class Banner extends Template
             $this->isResponseParsed = true;
             return;
         }
-        
+
         foreach ($response->QwiserSearchResults->QueryConcepts->children() as $concept) {
             if (!isset($concept->DynamicProperties)) continue;
             $params = new \Magento\Framework\DataObject();

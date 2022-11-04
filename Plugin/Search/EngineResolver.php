@@ -1,16 +1,12 @@
 <?php
 
-/*
- * Celebros
+/**
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 namespace Celebros\ConversionPro\Plugin\Search;
 
@@ -30,20 +26,18 @@ class EngineResolver
     }
 
     /**
-     * Returns MySQL search engine if Celebros search is enabled
+     * Returns 'celebros' search engine if Celebros search is enabled
      *
-     * @param \Magento\Search\Model\EngineResolver $resolver
-     * @param string $currentSearchEngine
+     * @param Resolver $resolver
+     * @param string $result
      * @return string
      */
-    public function afterGetCurrentSearchEngine(
-        Resolver $resolver,
-        $currentSearchEngine
-    ) {
+    public function afterGetCurrentSearchEngine(Resolver $resolver, $result)
+    {
         if ($this->helper->isActiveEngine() && $this->helper->isPermittedHandle()) {
-            $currentSearchEngine = $resolver::CATALOG_SEARCH_MYSQL_ENGINE;
+            $result = 'celebros';
         }
 
-        return $currentSearchEngine;
+        return $result;
     }
 }

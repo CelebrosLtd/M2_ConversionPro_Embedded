@@ -1,15 +1,11 @@
 <?php
 /**
- * Celebros
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 namespace Celebros\ConversionPro\Block\Catalog\Product\ProductList;
 
@@ -20,7 +16,7 @@ class CustomMessage extends Template
 {
     const CAMPAIGN_NAME = 'custom_message';
     const XML_NAME = 'custom message';
-    
+
     /**
      * @var \Celebros\ConversionPro\Helper\Data
      */
@@ -75,7 +71,7 @@ class CustomMessage extends Template
             $params = $this->searchHelper->getSearchParams();
             $this->response = $this->searchHelper->getCustomResults($params);
         }
-        
+
         return $this->response;
     }
 
@@ -84,7 +80,7 @@ class CustomMessage extends Template
         if (!$this->helper->isCampaignsEnabled(self::CAMPAIGN_NAME)) {
             return;
         }
-        
+
         if ($this->isResponseParsed) {
             return;
         }
@@ -94,7 +90,7 @@ class CustomMessage extends Template
             $this->isResponseParsed = true;
             return;
         }
-        
+
         foreach ($response->QwiserSearchResults->QueryConcepts->children() as $concept) {
             if (!isset($concept->DynamicProperties)) continue;
             $params = new \Magento\Framework\DataObject();

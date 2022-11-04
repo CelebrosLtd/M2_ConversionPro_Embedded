@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- * Celebros
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish correct extension functionality.
- * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
- -->
+  /**
+   * Celebros (C) 2022. All Rights Reserved.
+   *
+   * DISCLAIMER
+   *
+   * Do not edit or add to this file if you wish correct extension functionality.
+   * If you wish to customize it, please contact Celebros.
+   */
+  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="layout_load_before">
         <observer name="celebros_conversionpro_layout_load_before" instance="Celebros\ConversionPro\Observer\LayoutLoadBefore" />
+    </event>
+    <event name="core_layout_block_create_after">
+        <observer name="hawksearch_listproduct_initcollection" instance="Celebros\ConversionPro\Observer\SortOrderInit" />
     </event>
 </config>

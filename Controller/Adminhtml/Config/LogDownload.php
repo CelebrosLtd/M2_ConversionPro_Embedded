@@ -1,15 +1,11 @@
 <?php
 /**
- * Celebros
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 namespace Celebros\ConversionPro\Controller\Adminhtml\Config;
 
@@ -32,14 +28,14 @@ class LogDownload extends LogAbstract
         parent::__construct($context, $file, $directoryList);
         $this->fileResponseFactory = $fileFactory;
     }
-    
+
     public function logFileProcess()
     {
         if ($this->file->isReadable($this->filePath)) {
             $content = $this->file->fileGetContents($this->filePath);
         } else {
-            $this->messageManager->addError(__("An error occurred. Log file is not exist or not readable")); 
-        }    
+            $this->messageManager->addError(__("An error occurred. Log file is not exist or not readable"));
+        }
 
         if (isset($content)) {
             return $this->fileResponseFactory->create(
@@ -48,7 +44,7 @@ class LogDownload extends LogAbstract
                 DirectoryList::TMP
             );
         } else {
-            $this->messageManager->addError(__("An error occurred. File content is empty")); 
+            $this->messageManager->addError(__("An error occurred. File content is empty"));
         }
     }
 }

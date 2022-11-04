@@ -1,37 +1,34 @@
 <?php
 
-/*
- * Celebros
+/**
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 
 namespace Celebros\ConversionPro\Model\Catalog\Layer\Filter;
 
+use Celebros\ConversionPro\Helper\Data as Helper;
+use Celebros\ConversionPro\Helper\Search as SearchHelper;
 use Magento\Catalog\Model\Layer;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Pricing\Helper\Data\Proxy as PriceHelper;
 use Magento\Framework\Simplexml\Element as XmlElement;
 use Magento\Store\Model\StoreManagerInterface;
-use Celebros\ConversionPro\Helper\Data;
-use Celebros\ConversionPro\Helper\Search;
-use Magento\Framework\Pricing\Helper\Data\Proxy as PriceHelper;
-use Magento\Framework\App\RequestInterface;
 
 class Question extends Layer\Filter\AbstractFilter
 {
     /**
-     * @var \Celebros\ConversionPro\Helper\Data
+     * @var Helper
      */
     protected $helper;
 
     /**
-     * @var \Celebros\ConversionPro\Helper\Data
+     * @var Helper
      */
     protected $searchHelper;
 
@@ -52,18 +49,19 @@ class Question extends Layer\Filter\AbstractFilter
      * @param StoreManagerInterface $storeManager
      * @param Layer $layer
      * @param Layer\Filter\Item\DataBuilder $itemDataBuilder
-     * @param Data $helper
-     * @param Search $searchHelper
+     * @param Helper $helper
+     * @param SearchHelper $searchHelper
      * @param PriceHelper $priceHelper
      * @param array $data
+     * @throws LocalizedException
      */
     public function __construct(
         Layer\Filter\ItemFactory $filterItemFactory,
         StoreManagerInterface $storeManager,
         Layer $layer,
         Layer\Filter\Item\DataBuilder $itemDataBuilder,
-        Data $helper,
-        Search $searchHelper,
+        Helper $helper,
+        SearchHelper $searchHelper,
         PriceHelper $priceHelper,
         array $data = []
     ) {
@@ -338,7 +336,7 @@ class Question extends Layer\Filter\AbstractFilter
     /**
      * Initialize filter items
      *
-     * @return  \Magento\Catalog\Model\Layer\Filter\AbstractFilter
+     * @return  Layer\Filter\AbstractFilter
      */
     protected function _initItems()
     {

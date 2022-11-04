@@ -1,15 +1,12 @@
 <?php
 
 /**
- * Celebros
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 
 namespace Celebros\ConversionPro\Helper;
@@ -44,7 +41,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public const XML_PATH_NAV_TO_SEARCH_BLACKLIST         = 'conversionpro/nav_to_search/blacklist';
     public const XML_PATH_CATEGORY_QUERY_TYPE             = 'conversionpro/nav_to_search/category_query_type';
     public const XML_PATH_NAV2SEARCH_BY                   = 'conversionpro/nav_to_search/nav_to_search_search_by';
-    public const XML_PATH_NAV2SEARCH_RELEVANCE            = 'conversionpro/nav_to_search/relevance_rename';
     public const XML_PATH_ANSWER_ID_PREFIX                = 'conversionpro/nav_to_search/answer_id_prefix';
     public const XML_PATH_ANALYTICS_CUST_ID = 'conversionpro/anlx_settings/cid';
     public const XML_PATH_ANALYTICS_HOST    = 'conversionpro/anlx_settings/host';
@@ -347,7 +343,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ScopeInterface::SCOPE_STORE,
             $store
         );
-        $campaignsTypes = explode(',', $this->scopeConfig->getValue(
+        $campaignsTypes = explode(',', (string)$this->scopeConfig->getValue(
             self::XML_PATH_CAMPAIGNS_TYPE,
             ScopeInterface::SCOPE_STORE,
             $store
@@ -549,18 +545,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
-    public function isRelevanceNav2Search($store = null)
-    {
-        return $this->scopeConfig->getValue(
-            self::XML_PATH_NAV2SEARCH_RELEVANCE,
-            ScopeInterface::SCOPE_STORE,
-            $store
-        );
-    }
-
     public function getFilterType($store = null): array
     {
-        return explode(',', $this->scopeConfig->getValue(
+        return explode(',', (string)$this->scopeConfig->getValue(
             self::XML_PATH_PRICE_FILTER_TYPE,
             ScopeInterface::SCOPE_STORE,
             $store
@@ -623,7 +610,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 return $priceValue;
             }
 
-            return array_map('intval', explode(',', $value));
+            return array_map('intval', explode(',', (string)$value));
         }
 
         return (array)$value;
@@ -631,7 +618,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function validateAndPreparePriceAnswer($value)
     {
-        $array = explode("_", $value);
+        $array = explode("_", (string)$value);
         if (count($array) == 3
             && (bool)$array[0] == false
             && strpos($array[1], "P") !== false

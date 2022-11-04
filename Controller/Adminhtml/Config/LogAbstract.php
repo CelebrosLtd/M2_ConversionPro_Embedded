@@ -1,15 +1,11 @@
 <?php
 /**
- * Celebros
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 namespace Celebros\ConversionPro\Controller\Adminhtml\Config;
 
@@ -25,18 +21,18 @@ abstract class LogAbstract extends Action
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Celebros_ConversionPro::config_conversionpro';    
-    
+    const ADMIN_RESOURCE = 'Celebros_ConversionPro::config_conversionpro';
+
     /**
      * @var string
      */
     protected $fileName = '';
-    
+
     /**
      * @var string
      */
     protected $filePath = '';
-    
+
     /**
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\Filesystem\Driver\File $file
@@ -52,7 +48,7 @@ abstract class LogAbstract extends Action
         $this->file = $file;
         $this->directoryList = $directoryList;
     }
-    
+
     public function execute()
     {
         if ($this->fileName = $this->getRequest()->getParam('filename', false)) {
@@ -63,11 +59,11 @@ abstract class LogAbstract extends Action
         } else {
             $this->messageManager->addError(__("An error occurred. Log filename is not defined"));
         }
-        
+
         $this->_redirect(
             $this->_redirect->getRefererUrl()
         );
     }
-    
+
     abstract public function logFileProcess();
 }

@@ -1,15 +1,12 @@
 <?php
 
-/*
- * Celebros
+/**
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 
 namespace Celebros\ConversionPro\Helper;
@@ -103,8 +100,6 @@ class Search extends Helper\AbstractHelper
 
             $params->setFilters($filters);
             $this->currentSearchParams = $params;
-
-            return $params;
         }
 
         return $this->currentSearchParams;
@@ -318,8 +313,8 @@ class Search extends Helper\AbstractHelper
     public function getCurrentCustomResults($handle = null)
     {
         if ($handle) {
-            if (isset($this->customResultsCache[$hanlde])) {
-                return $this->customResultsCache[$hanlde];
+            if (isset($this->customResultsCache[$handle])) {
+                return $this->customResultsCache[$handle];
             }
         }
 
@@ -431,28 +426,12 @@ class Search extends Helper\AbstractHelper
         return false;
     }
 
-    public function getToolbarData()
-    {
-        $searchResults = $this->getCustomResults()->QwiserSearchResults;
-        $data = new \Magento\Framework\DataObject();
-        $data->setCurrentPage($searchResults->SearchInformation->getAttribute('CurrentPage'));
-        $data->setTotalNum($searchResults->getAttribute('RelevantProductsCount'));
-        $data->setLastPageNum($searchResults->getAttribute('NumberOfPages'));
-        $data->setData(
-            '_current_grid_order',
-            $this->sortOrderMap(
-                $searchResults->SearchInformation
-                    ->SortingOptions
-                    ->getAttribute('FieldName')
-            )
-        );
-        $data->setData(
-            '_current_grid_direction',
-            ($searchResults->SearchInformation->SortingOptions->getAttribute('Ascending') == 'true') ? 'asc' : 'desc'
-        );
-        return $data;
-    }
-
+    /**
+     * Re-map sorting field
+     *
+     * @param string $order
+     * @return string
+     */
     public function sortOrderMap($order)
     {
         switch ($order) {

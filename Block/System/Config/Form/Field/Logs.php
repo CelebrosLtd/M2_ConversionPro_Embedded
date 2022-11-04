@@ -1,15 +1,11 @@
 <?php
 /**
- * Celebros
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 namespace Celebros\ConversionPro\Block\System\Config\Form\Field;
 
@@ -19,20 +15,20 @@ use \Magento\Framework\Data\Form\Element\AbstractElement;
 class Logs extends \Magento\Config\Block\System\Config\Form\Field
 {
     const LOG_FILE_PREFIX = 'celebros_';
-    
+
     /**
      * @var DirectoryList
      */
     protected $directoryList;
-    
+
     /**
      * @var array
      */
     protected $actions = [
-        'download' => 'Download', 
+        'download' => 'Download',
         'cleanup' => 'Delete'
     ];
-    
+
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param DirectoryList $directoryList
@@ -46,12 +42,12 @@ class Logs extends \Magento\Config\Block\System\Config\Form\Field
         $this->directoryList = $directoryList;
         parent::__construct($context, $data);
     }
-    
+
     protected function _prepareLayout()
     {
         parent::_prepareLayout();
         $this->setTemplate('Celebros_ConversionPro::system/config/logs.phtml');
-        
+
         return $this;
     }
 
@@ -64,7 +60,7 @@ class Logs extends \Magento\Config\Block\System\Config\Form\Field
     {
         $element = clone $element;
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
-        
+
         return parent::render($element);
     }
 
@@ -77,7 +73,7 @@ class Logs extends \Magento\Config\Block\System\Config\Form\Field
     {
         return $this->actions;
     }
-    
+
     /**
      * Return action url by actioname
      *
@@ -92,9 +88,9 @@ class Logs extends \Magento\Config\Block\System\Config\Form\Field
             return $this->_urlBuilder->getUrl(
                 'conversionpro/config/log' . $actionName,
                 ['filename' => $fileName]
-            ); 
+            );
         }
-        
+
         return null;
     }
 
@@ -125,7 +121,7 @@ class Logs extends \Magento\Config\Block\System\Config\Form\Field
                 }
             }
         }
-        
+
         return $result;
     }
 }

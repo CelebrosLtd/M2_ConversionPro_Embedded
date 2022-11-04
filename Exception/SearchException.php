@@ -1,16 +1,12 @@
 <?php
 
 /**
- * Celebros
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 
 namespace Celebros\ConversionPro\Exception;
@@ -21,12 +17,12 @@ class SearchException
 {
     public const RESPONSE_ERROR_CLASS = 'Celebros\ConversionPro\Exception\SearchResponseErrorException';
     public const SERVICE_ERROR_CLASS = 'Celebros\ConversionPro\Exception\SearchServiceErrorException';
-    
+
     public $exceptionClass = '\Exception';
     public $message;
     public $code = 0;
     public $previous = null;
-    
+
     public function __construct(
         $message,
         $code = 0,
@@ -34,7 +30,7 @@ class SearchException
     ) {
         $this->code = $code;
         $this->previous = $previous;
-        
+
         if ($message instanceof XmlElement) {
             if ($message === false) {
                 $this->message = __('Service response is empty');
@@ -67,12 +63,12 @@ class SearchException
             ) {
                 $this->message = __('No return value in response');
                 $this->exceptionClass = self::SERVICE_ERROR_CLASS;
-            } 
+            }
         } else {
             $this->message = (string)$message;
         }
     }
-    
+
     public function create()
     {
         $exceptionClass = $this->exceptionClass;
@@ -83,7 +79,7 @@ class SearchException
                 $this->previous
             );
         }
-        
+
         return null;
     }
 }

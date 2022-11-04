@@ -1,21 +1,20 @@
 <?xml version="1.0"?>
 <!--
- * Celebros
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish correct extension functionality.
- * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
- -->
+  /**
+   * Celebros (C) 2022. All Rights Reserved.
+   *
+   * DISCLAIMER
+   *
+   * Do not edit or add to this file if you wish correct extension functionality.
+   * If you wish to customize it, please contact Celebros.
+   */
+  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Celebros_ConversionPro" setup_version="1.5.2">
+    <module name="Celebros_ConversionPro" setup_version="1.5.3">
         <sequence>
             <module name="Magento_LayeredNavigation"/>
             <module name="Celebros_Main"/>
+            <module name="Magento_Elasticsearch"/>
         </sequence>
     </module>
 </config>

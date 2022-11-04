@@ -1,15 +1,12 @@
 <?php
 
-/*
- * Celebros
+/**
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 
 namespace Celebros\ConversionPro\Helper\Graphql;
@@ -24,7 +21,7 @@ class Search extends \Celebros\ConversionPro\Helper\Search
             'to'
         ]
     ];
-    
+
     public function getSearchParams()
     {
         $params = parent::getSearchParams();
@@ -38,7 +35,7 @@ class Search extends \Celebros\ConversionPro\Helper\Search
 
         return $this->currentSearchParams;
     }
-    
+
     protected function extractSortOrder(string $variables)
     {
         $variables = json_decode($variables, true);
@@ -47,7 +44,7 @@ class Search extends \Celebros\ConversionPro\Helper\Search
             return [$sortOrder, $dir];
         }
     }
-    
+
     public function getValueFromRequest($requestVar)
     {
         $variables = $this->_getRequest()->getParam('variables', false);
@@ -64,7 +61,7 @@ class Search extends \Celebros\ConversionPro\Helper\Search
 
         return null;
     }
-    
+
     public function parseGraqlFilter(array $filterData): ?string
     {
         $filterType = $this->getFilterType($filterData);
@@ -72,7 +69,7 @@ class Search extends \Celebros\ConversionPro\Helper\Search
         if (method_exists($this, $func)) {
             return $this->$func($filterData);
         }
-    
+
         return null;
         /*
         if (isset($filterData['in'])) {
@@ -92,38 +89,38 @@ class Search extends \Celebros\ConversionPro\Helper\Search
 
         return null;*/
     }
-    
+
     public function getFilterType(array $filterData): ?string
     {
-        
+
         foreach ($this->filterTypes as $type => $conds) {
             $status = true;
             foreach ($conds as $cond) {
                 $status = $status && isset($filterData[$cond]);
             }
-            
+
             if ($status) {
                 return $type;
             }
         }
-        
+
         return null;
     }
-    
+
     public function checkAndParseSingle(array $filterData): string
     {
         if (isset($filterData['eq'])) {
             return $filterData['eq'];
         }
     }
-    
+
     public function checkAndParseMulti(array $filterData): string
     {
         if (isset($filterData['in'])) {
             return implode(",", $filterData['in']);
         }
     }
-    
+
     public function checkAndParseRange(array $filterData): string
     {
         if (isset($filterData['from'])
