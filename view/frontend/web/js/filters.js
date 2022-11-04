@@ -1,10 +1,19 @@
+/**
+ * Celebros (C) 2022. All Rights Reserved.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish correct extension functionality.
+ * If you wish to customize it, please contact Celebros.
+ */
+
 define([
     'jquery'
 ], function ($) {
     return function (options) {
         var self = this;
         this.filters = options.filters;
-        Object.keys(this.filters).forEach( function(filter) { 
+        Object.keys(this.filters).forEach( function(filter) {
             var data = self.filters[filter];
             if (data.status) {
                 require([

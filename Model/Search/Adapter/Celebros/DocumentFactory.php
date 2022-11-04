@@ -1,17 +1,14 @@
 <?php
 
 /**
- * Celebros
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
- 
+
 namespace Celebros\ConversionPro\Model\Search\Adapter\Celebros;
 
 use Magento\Framework\Simplexml\Element as XmlElement;
@@ -50,7 +47,7 @@ class DocumentFactory
                 AttributeInterface::VALUE => $score
             ]
         );
-                
+
         return new Document(
             [
                 DocumentInterface::ID => $documentId,

@@ -1,15 +1,11 @@
 <?php
-/*
- * Celebros
+/**
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 namespace Celebros\ConversionPro\Model\Config\Source;
 
@@ -20,7 +16,7 @@ class CampaignTypes
         'Recommended Messages' => 'recommended_messages',
         'Custom Message' => 'custom_message'
     ];
-    
+
     public $handles = [
         'Search Page' => 'catalogsearch_result_index',
         'nav2search' => 'catalog_category_view'
@@ -42,7 +38,7 @@ class CampaignTypes
                 'value' => $groupValue
             ];
         }
-        
+
         return $options;
     }
 }

@@ -1,3 +1,12 @@
+/**
+ * Celebros (C) 2022. All Rights Reserved.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish correct extension functionality.
+ * If you wish to customize it, please contact Celebros.
+ */
+
 define([
     'jquery'
 ], function ($) {
@@ -9,8 +18,8 @@ define([
             inputPriceMax: "#input-price-max"
         };
         this._options = {
-            
-            
+
+
         };
         this.cssSelector = $.extend({}, this._cssSelector, cssSelector);
 		this.options = $.extend({}, this._options, options);
@@ -35,7 +44,7 @@ define([
                 min = $(self.cssSelector.inputPriceMin).data('min-price');
                 $(self.cssSelector.inputPriceMin).val(min);
             }
-            
+
             this.applyButtonState(1);
             return [min, max];
         };

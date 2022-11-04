@@ -1,15 +1,11 @@
 <?php
-/*
- * Celebros
+/**
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 namespace Celebros\ConversionPro\Plugin\Search\Model\ResourceModel;
 
@@ -29,7 +25,7 @@ class Query
     ) {
         $this->helper = $helper;
     }
-    
+
     /**
      * @param MagentoResourceModelQuery $resourceQuery
      * @param callable $proceed
@@ -46,10 +42,10 @@ class Query
         if ($this->helper->isActiveEngine() && $this->helper->isPermittedHandle()) {
             return $resourceQuery;
         }
-        
+
         return $proceed($object, $value);
     }
-    
+
     /**
      * @param MagentoResourceModelQuery $resourceQuery
      * @param callable $proceed

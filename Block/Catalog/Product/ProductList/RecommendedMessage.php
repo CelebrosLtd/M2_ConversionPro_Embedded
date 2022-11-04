@@ -1,15 +1,11 @@
 <?php
 /**
- * Celebros
+ * Celebros (C) 2022. All Rights Reserved.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish correct extension functionality.
  * If you wish to customize it, please contact Celebros.
- *
- ******************************************************************************
- * @category    Celebros
- * @package     Celebros_ConversionPro
  */
 namespace Celebros\ConversionPro\Block\Catalog\Product\ProductList;
 
@@ -19,7 +15,7 @@ use Magento\Framework\Simplexml\Element as XmlElement;
 class RecommendedMessage extends Template
 {
     const CAMPAIGN_NAME = 'recommended_messages';
-    
+
     /**
      * @var \Celebros\ConversionPro\Helper\Data
      */

@@ -1,3 +1,12 @@
+/**
+ * Celebros (C) 2022. All Rights Reserved.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish correct extension functionality.
+ * If you wish to customize it, please contact Celebros.
+ */
+
 define([
     'jquery'
 ], function ($) {
@@ -22,7 +31,7 @@ define([
                 if (type == 'more') {
                     $(this).parent().parent().on('celFilterApplied', function() {
                         self.showElements(this, type);
-                    }); 
+                    });
 
                     $(this).on('click', function() {
                         self.status = type;
@@ -61,7 +70,7 @@ define([
                 } else {
                     $(e).removeClass(self.cssSelector.hiddenClass);
                 }
-            });  
+            });
         };
         this.showMoreElements = function(elements) {
             elements.each( function(i, e) {
@@ -70,7 +79,7 @@ define([
                 } else {
                     $(e).removeClass(self.cssSelector.hiddenClass);
                 };
-            }); 
+            });
         };
         this.init();
     };

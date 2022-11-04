@@ -1,3 +1,12 @@
+/*
+ * Celebros (C) 2022. All Rights Reserved.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish correct extension functionality.
+ * If you wish to customize it, please contact Celebros.
+ */
+
 .config-nav-block .conversionpro-tab span {
     background: url(../images/celebros-conversionpro-tab-logo.png) no-repeat;
     padding-left: 28px;
@@ -17,7 +26,7 @@
     font-weight: 600;
 }
 .cel-logs {
-    margin-right: 10px;    
+    margin-right: 10px;
 }
 .cel-logs:before {
     font-family: 'Admin Icons';
