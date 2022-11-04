@@ -429,28 +429,12 @@ class Search extends Helper\AbstractHelper
         return false;
     }
 
-    public function getToolbarData()
-    {
-        $searchResults = $this->getCustomResults()->QwiserSearchResults;
-        $data = new \Magento\Framework\DataObject();
-        $data->setCurrentPage($searchResults->SearchInformation->getAttribute('CurrentPage'));
-        $data->setTotalNum($searchResults->getAttribute('RelevantProductsCount'));
-        $data->setLastPageNum($searchResults->getAttribute('NumberOfPages'));
-        $data->setData(
-            '_current_grid_order',
-            $this->sortOrderMap(
-                $searchResults->SearchInformation
-                    ->SortingOptions
-                    ->getAttribute('FieldName')
-            )
-        );
-        $data->setData(
-            '_current_grid_direction',
-            ($searchResults->SearchInformation->SortingOptions->getAttribute('Ascending') == 'true') ? 'asc' : 'desc'
-        );
-        return $data;
-    }
-
+    /**
+     * Re-map sorting field
+     *
+     * @param string $order
+     * @return string
+     */
     public function sortOrderMap($order)
     {
         switch ($order) {
