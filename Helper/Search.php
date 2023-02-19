@@ -11,51 +11,111 @@
 
 namespace Celebros\ConversionPro\Helper;
 
+use Celebros\ConversionPro\Helper\Cache as CacheHelper;
+use Celebros\ConversionPro\Model\Search as SearchModel;
+use Magento\Catalog\Model\Category as CategoryModel;
 use Magento\Framework\App\Helper;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\ResponseFactory;
 use Magento\Framework\DataObject;
 use Magento\Catalog\Model\Category;
 use Celebros\ConversionPro\Model\Config\Source\CategoryQueryType;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Simplexml\Element as XmlElement;
 use Magento\Store\Model\ScopeInterface;
 
 class Search extends Helper\AbstractHelper
 {
+    /**#@+
+     * Constants for keys of data array
+     */
     public const CATEGORY_QUESTION_TEXT = 'Category';
     public const CAT_ID_DYN_PROPERTY = 'MagEntityID';
-    public const CACHE_TAG = 'CONVERSIONPRO';
     public const CACHE_ID = 'conversionpro';
     public const REDIRECT_DYNAMIC_PROPERTY_NAME = 'redirection url';
+    /**#@-*/
 
     /**
      * @var Data
      */
     protected $helper;
+
+    /**
+     * @var array
+     */
     protected $customResultsCache = [];
+
+    /**
+     * @var string
+     */
     protected $allQuestionsCache;
+
+    /**
+     * @var array
+     */
     protected $questionAnswers = [];
+
+    /**
+     * @var int
+     */
     protected $currentPage;
+
+    /**
+     * @var int
+     */
     protected $pageSize;
+
+    /**
+     * @var array
+     */
     protected $order;
+
+    /**
+     * @var Cache
+     */
     protected $cache;
+
+    /**
+     * @var Category
+     */
     protected $category;
+
+    /**
+     * @var array
+     */
     protected $productAttributes = [];
+
+    /**
+     * @var DataObject
+     */
     protected $currentSearchParams;
+
+    /**
+     * @var array
+     */
     public $appliedFilters = [];
 
     /**
-     * @var \Celebros\ConversionPro\Model\Search
+     * @var SearchModel
      */
     protected $search;
 
+    /**
+     * @param Helper\Context $context
+     * @param Data $helper
+     * @param Cache $cache
+     * @param SearchModel $search
+     * @param Category $category
+     * @param ResponseFactory $response
+     */
     public function __construct(
         Helper\Context $context,
         Data $helper,
-        \Celebros\ConversionPro\Helper\Cache $cache,
-        \Celebros\ConversionPro\Model\Search $search,
-        \Magento\Catalog\Model\Category $category,
-        \Magento\Framework\App\ResponseFactory $response
+        CacheHelper $cache,
+        SearchModel $search,
+        CategoryModel $category,
+        ResponseFactory $response
     ) {
         $this->helper = $helper;
         $this->search = $search;
@@ -65,6 +125,12 @@ class Search extends Helper\AbstractHelper
         parent::__construct($context);
     }
 
+    /**
+     * Get Search params
+     *
+     * @return DataObject
+     * @throws NoSuchEntityException
+     */
     public function getSearchParams()
     {
         if (!$this->currentSearchParams) {
@@ -105,6 +171,13 @@ class Search extends Helper\AbstractHelper
         return $this->currentSearchParams;
     }
 
+    /**
+     * Get Custom search results
+     *
+     * @param DataObject|null $params
+     * @return false|XmlElement|mixed|\SimpleXMLElement
+     * @throws NoSuchEntityException
+     */
     public function getCustomResults(DataObject $params = null)
     {
         $params = ($params === null) ? $this->getSearchParams() : clone $params;
@@ -135,7 +208,13 @@ class Search extends Helper\AbstractHelper
         return $this->customResultsCache[$searchHandle];
     }
 
-    public function checkRedirects($customResults)
+    /**
+     * Check if redirect exist in search results. Set redirect if exists.
+     *
+     * @param SimpleXMLElement $customResults
+     * @return bool|void
+     */
+    protected function checkRedirects($customResults)
     {
         $currentConcepts = $customResults->QwiserSearchResults->QueryConcepts->children();
         foreach ($currentConcepts as $concept) {
@@ -149,12 +228,17 @@ class Search extends Helper\AbstractHelper
                         ->create()
                         ->setRedirect($property->getAttribute('value'))
                         ->sendResponse();
-                    die;
+                    return true;
                 }
             }
         }
     }
 
+    /**
+     * Get all questions
+     *
+     * @return false|XmlElement|\SimpleXMLElement|string
+     */
     public function getAllQuestions()
     {
         if ($this->allQuestionsCache === null) {
@@ -164,6 +248,12 @@ class Search extends Helper\AbstractHelper
         return $this->allQuestionsCache;
     }
 
+    /**
+     * Get Question answers
+     *
+     * @param string $questionId
+     * @return false|XmlElement|mixed|\SimpleXMLElement
+     */
     public function getQuestionAnswers($questionId)
     {
         if (!isset($this->questionAnswers[$questionId])) {
@@ -173,6 +263,14 @@ class Search extends Helper\AbstractHelper
         return $this->questionAnswers[$questionId];
     }
 
+    /**
+     * Get answers as array
+     *
+     * @param string $questionId
+     * @param string $keyAttribute
+     * @param string $valueAttribute
+     * @return array
+     */
     public function getQuestionAnswersAsArray($questionId, $keyAttribute = 'Id', $valueAttribute = 'Text')
     {
         $options = [];
@@ -184,6 +282,13 @@ class Search extends Helper\AbstractHelper
         return $options;
     }
 
+    /**
+     * Get query term for category
+     *
+     * @param Category $category
+     * @param int|string|null $store
+     * @return array|string|string[]
+     */
     public function getCategoryQueryTerm(Category $category, $store = null)
     {
         $queryType = $this->helper->getCategoryQueryType($store);
@@ -216,6 +321,12 @@ class Search extends Helper\AbstractHelper
         return str_replace(',', ' ', implode(' ', $names));
     }
 
+    /**
+     * Get request value
+     *
+     * @param string $requestVar
+     * @return mixed|null
+     */
     public function getValueFromRequest($requestVar)
     {
         $vars = $this->getAltRequestVars($requestVar);
@@ -228,6 +339,12 @@ class Search extends Helper\AbstractHelper
         return null;
     }
 
+    /**
+     * Chek var in request
+     *
+     * @param striing $requestVar
+     * @return mixed
+     */
     public function checkRequestVar($requestVar)
     {
         $vars = $this->getAltRequestVars($requestVar);
@@ -241,6 +358,12 @@ class Search extends Helper\AbstractHelper
         return $requestVar;
     }
 
+    /**
+     * Get all request vars
+     *
+     * @param string $requestVar
+     * @return array
+     */
     public function getAltRequestVars($requestVar)
     {
         $requestVar = str_replace('.', '_', $requestVar);
@@ -252,6 +375,12 @@ class Search extends Helper\AbstractHelper
         ];
     }
 
+    /**
+     * Get filter value
+     *
+     * @param string $requestVar
+     * @return false|mixed|null
+     */
     public function getFilterValue($requestVar)
     {
         $value = $this->getValueFromRequest($requestVar);
@@ -263,17 +392,30 @@ class Search extends Helper\AbstractHelper
         return $value;
     }
 
+    /**
+     * Get filter value as array
+     *
+     * @param string $requestVar
+     * @return array
+     */
     public function getFilterValueAsArray($requestVar)
     {
         $value = $this->getFilterValue($requestVar);
         return ($value === null) ? [] : $this->filterValueToArray($value);
     }
 
+    /**
+     * @param string $value
+     * @return array
+     */
     public function filterValueToArray($value)
     {
         return $this->helper->filterValueToArray($value);
     }
 
+    /**
+     * @return string[]
+     */
     public function getFilterRequestVars()
     {
         $questions = $this->getAllQuestions();
@@ -287,29 +429,50 @@ class Search extends Helper\AbstractHelper
         return $names;
     }
 
+    /**
+     * @param $answerId
+     * @return array
+     */
     public function getLabelByAnswerId($answerId)
     {
         return $this->questionAnswers;
     }
 
+    /**
+     * @param int $page
+     * @return $this
+     */
     public function setCurrentPage($page)
     {
         $this->currentPage = $page;
         return $this;
     }
 
+    /**
+     * @param $size
+     * @return $this
+     */
     public function setPageSize($size)
     {
         $this->pageSize = $size;
         return $this;
     }
 
+    /**
+     * @param $order
+     * @param $dir
+     * @return $this
+     */
     public function setOrder($order, $dir)
     {
         $this->order = [$order, $dir];
         return $this;
     }
 
+    /**
+     * @param $handle
+     * @return false|mixed
+     */
     public function getCurrentCustomResults($handle = null)
     {
         if ($handle) {
@@ -321,6 +484,11 @@ class Search extends Helper\AbstractHelper
         return reset($this->customResultsCache);
     }
 
+    /**
+     * @param $value
+     * @param $field
+     * @return false|XmlElement|\SimpleXMLElement|null
+     */
     public function getQuestionByField($value, $field)
     {
         $allQuestions = $this->getAllQuestions()->Questions->Question;
@@ -333,6 +501,9 @@ class Search extends Helper\AbstractHelper
         return false;
     }
 
+    /**
+     * @return XmlElement|\SimpleXMLElement|void|null
+     */
     public function getPriceQuestionMock()
     {
         $allQuestions = $this->getAllQuestions()->Questions->Question;
@@ -345,85 +516,6 @@ class Search extends Helper\AbstractHelper
 
             return $mock;
         }
-    }
-
-    public function getAnswerIdByCategoryId($category)
-    {
-        $cacheId = $this->cache->getId(__METHOD__, [$category->getId()]);
-        if ($answerId = $this->cache->load($cacheId)) {
-            return $answerId;
-        }
-
-        $allQuestions = $this->getAllQuestions()->Questions->Question;
-        foreach ($allQuestions as $question) {
-            if ($question->getAttribute('Text') == self::CATEGORY_QUESTION_TEXT) {
-                $catQuestionId = (int)$question->getAttribute('Id');
-                continue;
-            }
-        }
-
-        if (isset($catQuestionId)) {
-            $catLabel = $category->getName();
-            $answers = $this->getQuestionAnswers($catQuestionId);
-            foreach ($answers->Answers->Answer as $answer) {
-                foreach ($answer->DynamicProperties->children() as $property) {
-                    if ($property->getAttribute('name') == self::CAT_ID_DYN_PROPERTY) {
-                        if ($property->getAttribute('value') == $category->getId()) {
-                            $this->cache->save($answer->getAttribute('Id'), $cacheId);
-                            return (int)$answer->getAttribute('Id');
-                        }
-                    }
-                }
-
-                /* try to find category by label */
-                if ($answer->getAttribute('Text') == $catLabel) {
-                    $this->cache->save($answer->getAttribute('Id'), $cacheId);
-                    return (int)$answer->getAttribute('Id');
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Return product attribute value by another attribute value
-     *
-     * @param string $resultField
-     * @param string $value
-     * @param string $searchField
-     * @return string
-     */
-    public function getProductAttributeValue($resultField, $value, $searchField = 'mag_id')
-    {
-        $cResult = null;
-        $cProduct = false;
-        $products = $this->getCustomResults()->QwiserSearchResults->Products;
-        foreach ($products->children() as $product) {
-            foreach ($product->Fields->children() as $field) {
-                switch ($field->getAttribute('name')) {
-                    case $resultField:
-                        $cResult = $field->getAttribute('value');
-                        if ($cProduct) {
-                            return $cResult;
-                        }
-                        break;
-                    case $searchField:
-                        if ($field->getAttribute('value') == $value) {
-                            if ($cResult == true) {
-                                return $cResult;
-                            } else {
-                                $cProduct = true;
-                            }
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -448,11 +540,23 @@ class Search extends Helper\AbstractHelper
         return $result;
     }
 
+    /**
+     * Get minimum and maximum prices of price question
+     *
+     * @param string|null $val
+     * @return array|false|false[]|int
+     * @throws NoSuchEntityException
+     */
     public function getMinMaxPrices($val = null)
     {
+        $result = $val ? false : ['min' => false, 'max' => false];
+        $response = $this->getCustomResults();
+        if (!isset($response->QwiserSearchResults->Questions->Question)) {
+            return $result;
+        }
+
         $values = [];
-        $allQuestions = $this->getCustomResults()->QwiserSearchResults->Questions->Question;
-        foreach ($allQuestions as $question) {
+        foreach ($response->QwiserSearchResults->Questions->Question as $question) {
             if ($question->getAttribute('Id') == 'PriceQuestion') {
                 foreach ($question->Answers->Answer as $answer) {
                     $id = $answer->getAttribute('Id');
@@ -464,21 +568,25 @@ class Search extends Helper\AbstractHelper
             }
         }
 
-        if (count($values) != 0) {
-            if ($val == 'max') {
-                return (int)max($values);
-            } elseif ($val == 'min') {
-                return (int)min($values);
-            }
-
-            return [
-                'min' => min($values),
-                'max' => max($values)
-            ];
-        } else {
-            $return = $val ? false : ['min' => false, 'max' => false];
-            return $return;
+        if (!count($values)) {
+            return $result;
         }
+
+        switch ($val) {
+            case 'max':
+                $result = (int)max($values);
+                break;
+            case 'min':
+                $result = (int)min($values);
+                break;
+            default:
+                $result = [
+                    'min' => min($values),
+                    'max' => max($values)
+                ];
+        }
+
+        return $result;
     }
 
     /**

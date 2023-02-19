@@ -16,7 +16,7 @@ use Celebros\ConversionPro\Helper\Search as SearchHelper;
 use Magento\Catalog\Model\Layer;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Pricing\Helper\Data\Proxy as PriceHelper;
+use Magento\Framework\Pricing\Helper\Data as PriceHelper;
 use Magento\Framework\Simplexml\Element as XmlElement;
 use Magento\Store\Model\StoreManagerInterface;
 

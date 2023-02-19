@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Celebros (C) 2022. All Rights Reserved.
  *
@@ -14,7 +15,7 @@ use Magento\Framework\Simplexml\Element as XmlElement;
 
 class RecommendedMessage extends Template
 {
-    const CAMPAIGN_NAME = 'recommended_messages';
+    public const CAMPAIGN_NAME = 'recommended_messages';
 
     /**
      * @var \Celebros\ConversionPro\Helper\Data
@@ -31,33 +32,51 @@ class RecommendedMessage extends Template
      */
     protected $response;
 
+    /**
+     * @param Template\Context $context
+     * @param \Celebros\ConversionPro\Helper\Data $helper
+     * @param \Celebros\ConversionPro\Helper\Search $searchHelper
+     * @param array $data
+     */
     public function __construct(
         Template\Context $context,
         \Celebros\ConversionPro\Helper\Data $helper,
         \Celebros\ConversionPro\Helper\Search $searchHelper,
-        array $data = [])
-    {
+        array $data = []
+    ) {
         $this->helper = $helper;
         $this->searchHelper = $searchHelper;
         parent::__construct($context, $data);
     }
 
+    /**
+     * Get recommended message
+     *
+     * @return string|null
+     */
     public function getRecommendedMessage()
     {
-        if ($this->helper->isActiveEngine() && $this->helper->isCampaignsEnabled(self::CAMPAIGN_NAME)) {
-            $response = $this->_getResponse();
-            $message = $response->QwiserSearchResults->getAttribute('RecommendedMessage');
-            return $message;
-        } else {
+        if (!$this->helper->isActiveEngine() || !$this->helper->isCampaignsEnabled(self::CAMPAIGN_NAME)) {
             return '';
         }
+
+        $response = $this->getResponse();
+        if ($response->QwiserSearchResults !== null) {
+            return $response->QwiserSearchResults->getAttribute('RecommendedMessage');
+        }
+
+        return '';
     }
 
-    protected function _getResponse()
+    /**
+     * Get Search results response
+     *
+     * @return false|XmlElement|mixed|\SimpleXMLElement
+     */
+    protected function getResponse()
     {
-        if (is_null($this->response)) {
-            $params = $this->searchHelper->getSearchParams();
-            $this->response = $this->searchHelper->getCustomResults($params);
+        if ($this->response === null) {
+            $this->response = $this->searchHelper->getCustomResults();
         }
         return $this->response;
     }

@@ -9,13 +9,14 @@
  */
 namespace Celebros\ConversionPro\Block\Catalog\Product\ProductList;
 
+use Magento\Framework\DataObject;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\Simplexml\Element as XmlElement;
 
 class CustomMessage extends Template
 {
-    const CAMPAIGN_NAME = 'custom_message';
-    const XML_NAME = 'custom message';
+    private const CAMPAIGN_NAME = 'custom_message';
+    private const XML_NAME = 'custom message';
 
     /**
      * @var \Celebros\ConversionPro\Helper\Data
@@ -42,69 +43,95 @@ class CustomMessage extends Template
      */
     protected $isResponseParsed = false;
 
+    /**
+     * @param Template\Context $context
+     * @param \Celebros\ConversionPro\Helper\Data $helper
+     * @param \Celebros\ConversionPro\Helper\Search $searchHelper
+     * @param array $data
+     */
     public function __construct(
         Template\Context $context,
         \Celebros\ConversionPro\Helper\Data $helper,
         \Celebros\ConversionPro\Helper\Search $searchHelper,
-        array $data = [])
-    {
+        array $data = []
+    ) {
         $this->helper = $helper;
         $this->searchHelper = $searchHelper;
         parent::__construct($context, $data);
     }
 
+    /**
+     * Check if Custom message is set
+     *
+     * @return bool
+     */
     public function hasCustomMessage()
     {
-        $this->_parseResponse();
-        return !is_null($this->customMessage);
+        $message = $this->getParsedResponseMessage();
+        return $message->hasHtml();
     }
 
+    /**
+     * Get Custom message
+     *
+     * @return string
+     */
     public function getCustomMessage()
     {
-        $this->_parseResponse();
-        return $this->customMessage;
+        return $this->getParsedResponseMessage()->getHtml();
     }
 
-    protected function _getResponse()
+    /**
+     * Get Search results response
+     *
+     * @return false|XmlElement|mixed|\SimpleXMLElement
+     */
+    protected function getResponse()
     {
-        if (is_null($this->response)) {
-            $params = $this->searchHelper->getSearchParams();
-            $this->response = $this->searchHelper->getCustomResults($params);
+        if ($this->response === null) {
+            $this->response = $this->searchHelper->getCustomResults();
         }
 
         return $this->response;
     }
 
-    protected function _parseResponse()
+    /**
+     * Get Custom message from search result response
+     *
+     * @return DataObject
+     */
+    protected function getParsedResponseMessage()
     {
+        $message = new DataObject();
+
         if (!$this->helper->isCampaignsEnabled(self::CAMPAIGN_NAME)) {
-            return;
+            return $message;
         }
 
         if ($this->isResponseParsed) {
-            return;
+            return $message;
         }
 
-        $response = $this->_getResponse();
+        $response = $this->getResponse();
         if (!isset($response->QwiserSearchResults->QueryConcepts)) {
             $this->isResponseParsed = true;
-            return;
+            return $message;
         }
 
         foreach ($response->QwiserSearchResults->QueryConcepts->children() as $concept) {
-            if (!isset($concept->DynamicProperties)) continue;
-            $params = new \Magento\Framework\DataObject();
+            if (!isset($concept->DynamicProperties)) {
+                continue;
+            }
+
             foreach ($concept->DynamicProperties->children() as $property) {
-                $value = $property->getAttribute('value');
-                switch ($property->getAttribute('name')) {
-                    case self::XML_NAME:
-                        $params->setHtml($value);
-                        $this->customMessage = $params;
-                        break;
+                if ($property->getAttribute('name') !== self::XML_NAME) {
+                    continue;
                 }
+                $message->setHtml($property->getAttribute('value'));
             }
         }
 
         $this->isResponseParsed = true;
+        return $message;
     }
 }

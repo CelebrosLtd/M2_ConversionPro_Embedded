@@ -9,12 +9,13 @@
  */
 namespace Celebros\ConversionPro\Block\Catalog\Product\ProductList;
 
+use Magento\Framework\DataObject;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\Simplexml\Element as XmlElement;
 
 class Banner extends Template
 {
-    const BANNER_CAMPAIGN_NAME = 'banners';
+    private const BANNER_CAMPAIGN_NAME = 'banners';
 
     /**
      * @var \Celebros\ConversionPro\Helper\Data
@@ -37,100 +38,108 @@ class Banner extends Template
     protected $bannerImage;
 
     /**
-     * @var DataObject
-     */
-    protected $bannerFlash;
-
-    /**
      * @var bool
      */
     protected $isResponseParsed = false;
 
+    /**
+     * @param Template\Context $context
+     * @param \Celebros\ConversionPro\Helper\Data $helper
+     * @param \Celebros\ConversionPro\Helper\Search $searchHelper
+     * @param array $data
+     */
     public function __construct(
         Template\Context $context,
         \Celebros\ConversionPro\Helper\Data $helper,
         \Celebros\ConversionPro\Helper\Search $searchHelper,
-        array $data = [])
-    {
+        array $data = []
+    ) {
         $this->helper = $helper;
         $this->searchHelper = $searchHelper;
         parent::__construct($context, $data);
     }
 
+    /**
+     * Check if banner image is set
+     *
+     * @return bool
+     */
     public function hasBannerImage()
     {
-        $this->_parseResponse();
-        return !is_null($this->bannerImage);
+        return $this->getParsedResponseBanner()->hasData();
     }
 
+    /**
+     * Get banner image
+     *
+     * @return DataObject
+     */
     public function getBannerImage()
     {
-        $this->_parseResponse();
-        return $this->bannerImage;
+        return $this->getParsedResponseBanner();
     }
 
-    public function hasBannerFlash()
+    /**
+     * Get Search results response
+     *
+     * @return false|XmlElement|mixed|\SimpleXMLElement
+     */
+    protected function getResponse()
     {
-        $this->_parseResponse();
-        return !is_null($this->bannerFlash);
-    }
-
-    public function getBannerFlash()
-    {
-        $this->_parseResponse();
-        return $this->bannerFlash;
-    }
-
-    protected function _getResponse()
-    {
-        if (is_null($this->response)) {
-            $params = $this->searchHelper->getSearchParams();
-            $this->response = $this->searchHelper->getCustomResults($params);
+        if ($this->response === null) {
+            $this->response = $this->searchHelper->getCustomResults();
         }
 
         return $this->response;
     }
 
-    protected function _parseResponse()
+    /**
+     * Get baner from search result response
+     *
+     * @return void
+     */
+    protected function getParsedResponseBanner()
     {
+        $banner = new DataObject();
         if (!$this->helper->isCampaignsEnabled(self::BANNER_CAMPAIGN_NAME)) {
-            return;
+            return $banner;
         }
 
         if ($this->isResponseParsed) {
-            return;
+            return $banner;
         }
 
-        $response = $this->_getResponse();
+        $response = $this->getResponse();
         if (!isset($response->QwiserSearchResults->QueryConcepts)) {
             $this->isResponseParsed = true;
-            return;
+            return $banner;
         }
 
         foreach ($response->QwiserSearchResults->QueryConcepts->children() as $concept) {
-            if (!isset($concept->DynamicProperties)) continue;
-            $params = new \Magento\Framework\DataObject();
+            if (!isset($concept->DynamicProperties)) {
+                continue;
+            }
+
             foreach ($concept->DynamicProperties->children() as $property) {
                 $value = $property->getAttribute('value');
                 switch ($property->getAttribute('name')) {
                     case 'banner image':
-                        $params->setImageUrl($value);
-                        $this->bannerImage = $params;
+                        $banner->setImageUrl($value);
                         break;
                     case 'banner landing page':
-                        $params->setUrl($value);
-                        $this->bannerImage = $params;
+                        $banner->setUrl($value);
                         break;
                     case 'start datetime':
-                        $params->setStartDatetime($value);
+                        $banner->setStartDatetime($value);
                         break;
                     case 'end datetime':
-                        $params->setEndDatetime($value);
+                        $banner->setEndDatetime($value);
                         break;
                 }
             }
         }
 
         $this->isResponseParsed = true;
+        return $banner;
     }
 }

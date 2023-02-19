@@ -14,7 +14,6 @@
 ?>
 <?php if ($this->helper('Celebros\ConversionPro\Helper\Data')->isCampaignsEnabled()) : ?>
     <?php if ($block->hasCustomMessage()) : ?>
-        <?php $message = $block->getCustomMessage() ?>
-        <?php echo $message->getHtml(); ?>
+        <?php echo $block->getCustomMessage() ?>
     <?php endif ?>
 <?php endif ?>
