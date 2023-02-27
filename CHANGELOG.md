@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 1.5.4
+
+### FIXES
+
+- Fix Code sniffer errors
+- Fix of empty response XML in Search Adapter and response parsers
+
 ## 1.5.3
 
 ### UPDATES
