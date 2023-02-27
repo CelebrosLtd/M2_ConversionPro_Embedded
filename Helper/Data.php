@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Celebros (C) 2022. All Rights Reserved.
+ * Celebros (C) 2023. All Rights Reserved.
  *
  * DISCLAIMER
  *
@@ -13,6 +13,7 @@ namespace Celebros\ConversionPro\Helper;
 
 use Magento\Framework\App\Helper\Context;
 use Magento\Catalog\Model\Category;
+use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\Message\MessageInterface as MessageInterface;
 use Celebros\ConversionPro\Model\Config\Source\PriceFilterTypes;
@@ -81,7 +82,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $storeManager;
 
     /**
-     * @var \Magento\Framework\Pricing\Helper\Data
+     * @var PricingHelper
      */
     protected $priceHelper;
 
@@ -110,7 +111,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\Registry $registry,
         \Magento\Framework\App\State $state,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\Pricing\Helper\Data $priceHelper,
+        PricingHelper $priceHelper,
         \Magento\Framework\UrlInterface $urlInterface,
         \Celebros\Main\Helper\Debug $debug,
         \Magento\Customer\Model\Session $customerSession,

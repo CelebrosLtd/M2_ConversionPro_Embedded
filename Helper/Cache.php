@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Celebros (C) 2022. All Rights Reserved.
+ * Celebros (C) 2023. All Rights Reserved.
  *
  * DISCLAIMER
  *
@@ -11,22 +11,46 @@
 
 namespace Celebros\ConversionPro\Helper;
 
+use Magento\Framework\App\Cache as AppCache;
+use Magento\Framework\App\Cache\State as CacheState;
 use Magento\Framework\App\Helper;
 use Magento\Store\Model\ScopeInterface;
 
 class Cache extends Helper\AbstractHelper
 {
-    const XML_PATH_CACHE_LIFETIME = 'conversionpro/advanced/request_lifetime';
+    /**
+     * Cache tag used to distinguish the cache type from all other cache
+     */
+    public const CACHE_TAG = 'CONVERSIONPRO';
 
-    const CACHE_TAG = 'CONVERSIONPRO';
-    const CACHE_ID = 'conversionpro';
-    const CACHE_LIFETIME = 13600;
+    /**
+     * Cache type identifier
+     */
+    public const CACHE_TYPE_ID = 'conversionpro';
+
+    /**
+     * Cache lifetime
+     */
+    private const CACHE_LIFETIME = 13600;
+
+    /**
+     * XML Config path
+     */
+    private const XML_PATH_CACHE_LIFETIME = 'conversionpro/advanced/request_lifetime';
 
     /**
      * @var Data
      */
     protected $helper;
+
+    /**
+     * @var AppCache
+     */
     protected $cache;
+
+    /**
+     * @var CacheState
+     */
     protected $cacheState;
 
     /**
@@ -34,11 +58,17 @@ class Cache extends Helper\AbstractHelper
      */
     protected $search;
 
+    /**
+     * @param Helper\Context $context
+     * @param Data $helper
+     * @param AppCache $cache
+     * @param CacheState $cacheState
+     */
     public function __construct(
         Helper\Context $context,
         Data $helper,
-        \Magento\Framework\App\Cache $cache,
-        \Magento\Framework\App\Cache\State $cacheState
+        AppCache $cache,
+        CacheState $cacheState
     ) {
         $this->helper = $helper;
         $this->cache = $cache;
@@ -46,24 +76,44 @@ class Cache extends Helper\AbstractHelper
         parent::__construct($context);
     }
 
+    /**
+     * Get cache ID
+     *
+     * @param string $method
+     * @param array $vars
+     * @return string
+     */
     public function getId($method, $vars = [])
     {
         return sha1($method . '::' . implode('', $vars));
     }
 
+    /**
+     * Load cached data
+     *
+     * @param string $cacheId
+     * @return false|string
+     */
     public function load($cacheId)
     {
-        if ($this->cacheState->isEnabled(self::CACHE_ID)
-        && ($this->getCacheLifeTime() >= 0)) {
+        if ($this->cacheState->isEnabled(self::CACHE_TYPE_ID)
+            && ($this->getCacheLifeTime() >= 0)) {
             return $this->cache->load($cacheId);
         }
 
         return false;
     }
 
+    /**
+     * Save data to cache
+     *
+     * @param string $data
+     * @param string $cacheId
+     * @return bool
+     */
     public function save($data, $cacheId)
     {
-        if ($this->cacheState->isEnabled(self::CACHE_ID)
+        if ($this->cacheState->isEnabled(self::CACHE_TYPE_ID)
         && ($this->getCacheLifeTime() >= 0)) {
             $this->cache->save(
                 $data,
@@ -78,18 +128,20 @@ class Cache extends Helper\AbstractHelper
         return false;
     }
 
+    /**
+     * Get cache lifetime from config
+     *
+     * @param null|int|string $store
+     * @return int
+     */
     protected function getCacheLifeTime($store = null) : int
     {
-        $lifeTime = $this->scopeConfig->getValue(
+        $lifeTime = (int)$this->scopeConfig->getValue(
             self::XML_PATH_CACHE_LIFETIME,
             ScopeInterface::SCOPE_STORE,
             $store
         );
 
-        if ($lifeTime) {
-            return (int) $lifeTime;
-        }
-
-        return self::CACHE_LIFETIME;
+        return $lifeTime ?: self::CACHE_LIFETIME;
     }
 }

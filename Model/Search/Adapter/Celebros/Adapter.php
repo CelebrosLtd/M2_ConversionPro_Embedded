@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Celebros (C) 2022. All Rights Reserved.
+ * Celebros (C) 2023. All Rights Reserved.
  *
  * DISCLAIMER
  *
@@ -48,16 +48,14 @@ class Adapter implements AdapterInterface
         $this->responseFactory = $responseFactory;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function query(RequestInterface $request)
     {
         $params = $this->mapper->buildQuery($request);
-        $response = $this->executeQuery($params);
+        $response = $this->searchHelper->getCustomResults($params);
 
         return $this->responseFactory->create($response);
-    }
-
-    public function executeQuery(DataObject $params)
-    {
-        return $this->searchHelper->getCustomResults($params);
     }
 }

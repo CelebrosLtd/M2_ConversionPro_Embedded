@@ -1,6 +1,6 @@
 <?php
 /**
- * Celebros (C) 2022. All Rights Reserved.
+ * Celebros (C) 2023. All Rights Reserved.
  *
  * DISCLAIMER
  *
@@ -9,27 +9,25 @@
  */
 namespace Celebros\ConversionPro\Model\Cache;
 
+use Celebros\ConversionPro\Helper\Cache;
+use Magento\Framework\App\Cache\Type\FrontendPool;
+
 class Type extends \Magento\Framework\Cache\Frontend\Decorator\TagScope
 {
     /**
      * Cache type code unique among all cache types
      */
-    const TYPE_IDENTIFIER = 'conversionpro';
+    private const TYPE_IDENTIFIER = 'conversionpro';
 
     /**
-     * Cache tag used to distinguish the cache type from all other cache
-     */
-    const CACHE_TAG = 'CONVERSIONPRO';
-
-    /**
-     * @param \Magento\Framework\App\Cache\Type\FrontendPool $cacheFrontendPool
+     * @param FrontendPool $cacheFrontendPool
      */
     public function __construct(
-        \Magento\Framework\App\Cache\Type\FrontendPool $cacheFrontendPool
+        FrontendPool $cacheFrontendPool
     ) {
         parent::__construct(
-            $cacheFrontendPool->get(self::TYPE_IDENTIFIER),
-            self::CACHE_TAG
+            $cacheFrontendPool->get(Cache::CACHE_TYPE_ID),
+            Cache::CACHE_TAG
         );
     }
 }

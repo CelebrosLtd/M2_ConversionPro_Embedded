@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Celebros (C) 2022. All Rights Reserved.
+ * Celebros (C) 2023. All Rights Reserved.
  *
  * DISCLAIMER
  *
@@ -11,38 +11,73 @@
 
 namespace Celebros\ConversionPro\Helper;
 
+use Celebros\ConversionPro\Helper\Data as DataHelper;
+use Magento\Customer\Model\Session;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\Helper;
+use Magento\Framework\HTTP\Client\Curl;
 
 class Analytics extends Helper\AbstractHelper
 {
-    const ANALYTICS_URL_PATH = 'ai.celebros-analytics.com/AIWriter/WriteLog.ashx';
+    /**
+     * Constants
+     */
+    public const ANALYTICS_URL_PATH = 'ai.celebros-analytics.com/AIWriter/WriteLog.ashx';
 
+    /**
+     * @var array
+     */
     protected $_urlParams = [];
 
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * Analytics constructor
+     *
+     * @param Context $context
+     * @param DataHelper $helper
+     * @param Curl $curl
+     * @param Session $session
+     */
     public function __construct(
         Context $context,
-        \Celebros\ConversionPro\Helper\Data $helper,
-        \Magento\Framework\HTTP\Client\Curl $curl
+        DataHelper $helper,
+        Curl $curl,
+        Session $session
     ) {
         $this->helper = $helper;
         $this->curl = $curl;
+        $this->session = $session;
         $this->setUrlParam('type', 'SR');
         $this->setUrlParam('responseType', 'JSON');
 
         parent::__construct($context);
     }
 
+    /**
+     * @return string
+     */
     public function getProtocol()
     {
         return $this->_getRequest()->isSecure() ? 'https' : 'http';
     }
 
+    /**
+     * @param $name
+     * @param $value
+     * @return void
+     */
     public function setUrlParam($name, $value)
     {
         $this->_urlParams[$name] = $value;
     }
 
+    /**
+     * @return string
+     */
     protected function _generateGUID()
     {
         global $SERVER_ADDR;
@@ -58,7 +93,7 @@ class Analytics extends Helper\AbstractHelper
         }
 
         $combined = $long_ip . $time;
-        $guid = md5($combined);
+        $guid = hash('md5', $combined);
         $guid = substr($guid, 0, 8) . "-" .
         substr($guid, 8, 4) . "-" .
         substr($guid, 12, 4) . "-" .
@@ -68,6 +103,9 @@ class Analytics extends Helper\AbstractHelper
         return $guid;
     }
 
+    /**
+     * @return string
+     */
     public function getParamsToUrl()
     {
         $result = [];
@@ -78,6 +116,10 @@ class Analytics extends Helper\AbstractHelper
         return implode('&', $result);
     }
 
+    /**
+     * @param \Magento\Framework\Simplexml\Element $results
+     * @return bool
+     */
     public function sendAnalyticsRequest(\Magento\Framework\Simplexml\Element $results)
     {
         $host = $this->helper->getAnalyticsHost();
@@ -85,8 +127,7 @@ class Analytics extends Helper\AbstractHelper
         $pageReferrer = $this->_urlBuilder->getUrl('*/*/*', ['_current' => true]);
         $this->setUrlParam('ref', $this->_urlBuilder->getBaseUrl());
         $this->setUrlParam('src', $pageReferrer);
-        $webSessionId = isset($_SESSION['core']['visitor_data']['session_id']) ? $_SESSION['core']['visitor_data']['session_id'] : session_id();
-        $this->setUrlParam('wsid', $webSessionId);
+        $this->setUrlParam('wsid', $this->session->getSessionId());
         $this->setUrlParam('ssid', $this->_generateGUID());
         $this->setUrlParam('lh', $this->getQwiserSearchLogHandle($results));
         $this->setUrlParam('dc', '');
@@ -104,11 +145,19 @@ class Analytics extends Helper\AbstractHelper
         return true;
     }
 
+    /**
+     * @param $body
+     * @return mixed
+     */
     public function parseAnalyticsResponse($body)
     {
         return json_decode(str_replace(['anlxCallback(',');'], '', $body));
     }
 
+    /**
+     * @param \Magento\Framework\Simplexml\Element $results
+     * @return string|null
+     */
     public function getQwiserSearchLogHandle(\Magento\Framework\Simplexml\Element $results)
     {
         return $results->QwiserSearchResults->getAttribute('LogHandle');
