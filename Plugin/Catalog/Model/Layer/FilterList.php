@@ -95,6 +95,9 @@ class FilterList
     {
         if (!count($this->filters)) {
             $response = $this->searchHelper->getCustomResults();
+            if (!isset($response->QwiserSearchResults->Questions)) {
+                return [];
+            }
             $questions = $response->QwiserSearchResults->Questions;
             $questionsList = $this->sortFilters($questions);
             foreach ($questionsList as $question) {

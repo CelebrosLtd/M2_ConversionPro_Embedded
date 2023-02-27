@@ -11,6 +11,8 @@
 
 namespace Celebros\ConversionPro\Model\Search\Adapter\Celebros;
 
+use Magento\Elasticsearch\SearchAdapter\AggregationFactory;
+use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Simplexml\Element as XmlElement;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Catalog\Model\Product;
@@ -18,11 +20,28 @@ use Magento\Framework\Search\Response\{Aggregation, QueryResponse};
 
 class ResponseFactory
 {
+    /**
+     * @var ObjectManagerInterface
+     */
     protected $objectManager;
+
+    /**
+     * @var DocumentFactory
+     */
     protected $documentFactory;
 
+    /**
+     * @var AggregationFactory
+     */
+    private $aggregationFactory;
+
+    /**
+     * @param ObjectManagerInterface $objectManager
+     * @param DocumentFactory $documentFactory
+     * @param BucketFactory $bucketFactory
+     */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager,
+        ObjectManagerInterface $objectManager,
         DocumentFactory $documentFactory,
         BucketFactory $bucketFactory
     ) {
@@ -31,30 +50,47 @@ class ResponseFactory
         $this->bucketFactory = $bucketFactory;
     }
 
+    /**
+     * Get Search results
+     *
+     * @param XmlElement $rawResponse
+     * @return XmlElement|null
+     */
     public function getSearchResults($rawResponse): ?XmlElement
     {
         return $rawResponse->QwiserSearchResults ?? null;
     }
 
+    /**
+     * Create Query Response instance
+     *
+     * @param XmlElement $rawResponse
+     * @return QueryResponse|mixed
+     */
     public function create($rawResponse)
     {
         $documents = [];
-        $searchResult = $this->getSearchResults($rawResponse);
-        $total = $searchResult->getAttribute('RelevantProductsCount');
-        $products = $searchResult->Products;
-        $entityMapping = $this->prepareEntityRowIdMapping($products);
-        $score = count($products->children());
-        foreach ($products->children() as $rawDocument) {
-            $entityId = $entityMapping[$rawDocument->getAttribute('MagId')] ?? false;
-            if ($entityId) {
-                $rawDocument->setAttribute('EntityId', $entityId);
-                $documents[] = $this->documentFactory->create($rawDocument, $score--);
-            }
-        }
-        $questions = $searchResult->Questions;
         $buckets = [];
-        foreach ($questions->children() as $rawDocument) {
-            $buckets[] = $this->bucketFactory->create($rawDocument);
+        $total = 0;
+
+        $searchResult = $this->getSearchResults($rawResponse);
+        if ($searchResult) {
+            $products = $searchResult->Products;
+            $entityMapping = $this->prepareEntityRowIdMapping($products);
+            $score = count($products->children());
+            foreach ($products->children() as $rawDocument) {
+                $entityId = $entityMapping[$rawDocument->getAttribute('MagId')] ?? false;
+                if ($entityId) {
+                    $rawDocument->setAttribute('EntityId', $entityId);
+                    $documents[] = $this->documentFactory->create($rawDocument, $score--);
+                }
+            }
+            $questions = $searchResult->Questions;
+            foreach ($questions->children() as $rawDocument) {
+                $buckets[] = $this->bucketFactory->create($rawDocument);
+            }
+
+            $total = $searchResult->getAttribute('RelevantProductsCount');
         }
 
         $aggregations = $this->objectManager->create(
@@ -72,6 +108,12 @@ class ResponseFactory
         );
     }
 
+    /**
+     * Prepapre mapping for a row
+     *
+     * @param XmlElement $products
+     * @return array
+     */
     public function prepareEntityRowIdMapping($products)
     {
         $ids = [];
