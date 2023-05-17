@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 1.5.5 - 2023-05-17
+
+### FIXES
+- fix: remove PriceFieldName attribute from search handler
+  There is no need to send PriceFieldName attribute ("I" parameter in the
+  request) in the API request.  The parameter "I" can be empty.
+  It is enough to have the profile name configured in Celebros
+  and it will defined the correct price field.
+  
+  Refs #SSUITE-893
+
 ## 1.5.4
 
 ### FIXES
