@@ -29,8 +29,8 @@ class Document extends AbstractSimpleObject implements \IteratorAggregate
         array $data = []
     ) {
         parent::__construct($data);
-        $this->_data[self::CUSTOM_ATTRIBUTES] = $documentFields;
-        $this->_data[self::ID] = $documentId;
+        $this->setData(self::CUSTOM_ATTRIBUTES, $documentFields);
+        $this->setData(self::ID, $documentId);
     }
 
     /**
@@ -40,7 +40,8 @@ class Document extends AbstractSimpleObject implements \IteratorAggregate
      */
     public function getId()
     {
-        return isset($this->_data[self::ID]) ? (int)$this->_data[self::ID] : false;
+        $id = $this->_get(self::ID);
+        return ($id !== null) ? (int)$id : false;
     }
 
     /**
@@ -62,7 +63,8 @@ class Document extends AbstractSimpleObject implements \IteratorAggregate
      */
     public function getCustomAttribute($attributeCode)
     {
-        return $this->_data[self::CUSTOM_ATTRIBUTES][$attributeCode] ?? null;
+        $customAttributes = $this->getCustomAttributes() ?? [];
+        return $customAttributes[$attributeCode] ?? null;
     }
 
     /**

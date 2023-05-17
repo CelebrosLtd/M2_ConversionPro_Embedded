@@ -23,15 +23,25 @@ use Celebros\ConversionPro\Helper\Data;
 class FilterAttributeReader
 {
     /**
+     * @var Search
+     */
+    private $search;
+
+    /**
+     * @var Data
+     */
+    private $helper;
+
+    /**
      * @param Search $search
      * @return void
      */
     public function __construct(
         Search $search,
-        Data $data
+        Data $helper
     ) {
         $this->search = $search;
-        $this->data = $data;
+        $this->helper = $helper;
     }
 
     /**

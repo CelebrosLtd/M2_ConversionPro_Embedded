@@ -11,6 +11,9 @@ namespace Celebros\ConversionPro\Block\System\Config\Form\Field;
 
 class TestButton extends \Magento\Config\Block\System\Config\Form\Field
 {
+    /**
+     * @inheritDoc
+     */
     protected function _prepareLayout()
     {
         parent::_prepareLayout();
@@ -18,6 +21,9 @@ class TestButton extends \Magento\Config\Block\System\Config\Form\Field
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $element = clone $element;
@@ -45,6 +51,12 @@ class TestButton extends \Magento\Config\Block\System\Config\Form\Field
         return $this->_toHtml();
     }
 
+
+    /**
+     * Get field mapping
+     *
+     * @return string[]
+     */
     protected function _getFieldMapping()
     {
         return [

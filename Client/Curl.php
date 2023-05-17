@@ -15,28 +15,18 @@ use Psr\Log\LoggerInterface;
 
 class Curl extends \Magento\Framework\HTTP\Client\Curl
 {
-    const CURLOPT_CONNECTTIMEOUT = 100;
-    const CURLOPT_TIMEOUT = 400;
+    public const CURLOPT_CONNECTTIMEOUT = 100;
+    public const CURLOPT_TIMEOUT = 400;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @var Helper
      */
     private $helper;
-
-    /**
-     * Return request headers
-     *
-     * @return array
-     */
-    public function getRequestHeaders() : array
-    {
-        return $this->_headers;
-    }
 
     /**
      * @param LoggerFactory $loggerFactory
@@ -56,6 +46,16 @@ class Curl extends \Magento\Framework\HTTP\Client\Curl
         $this->logger = $loggerFactory->create();
         $this->helper = $helper;
         parent::__construct($sslVersion);
+    }
+
+    /**
+     * Return request headers
+     *
+     * @return array
+     */
+    public function getRequestHeaders() : array
+    {
+        return $this->_headers;
     }
 
     /**

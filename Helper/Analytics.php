@@ -30,6 +30,16 @@ class Analytics extends Helper\AbstractHelper
     protected $_urlParams = [];
 
     /**
+     * @var Data
+     */
+    private $helper;
+
+    /**
+     * @var Curl
+     */
+    private $curl;
+
+    /**
      * @var Session
      */
     private $session;

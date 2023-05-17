@@ -16,24 +16,25 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Simplexml\Element as XmlElement;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Catalog\Model\Product;
-use Magento\Framework\Search\Response\{Aggregation, QueryResponse};
+use Magento\Framework\Search\Response\Aggregation;
+use Magento\Framework\Search\Response\QueryResponse;
 
 class ResponseFactory
 {
     /**
      * @var ObjectManagerInterface
      */
-    protected $objectManager;
+    private $objectManager;
 
     /**
      * @var DocumentFactory
      */
-    protected $documentFactory;
+    private $documentFactory;
 
     /**
-     * @var AggregationFactory
+     * @var BucketFactory
      */
-    private $aggregationFactory;
+    private $bucketFactory;
 
     /**
      * @param ObjectManagerInterface $objectManager

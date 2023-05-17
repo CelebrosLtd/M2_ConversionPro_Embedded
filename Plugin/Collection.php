@@ -11,6 +11,7 @@
 
 namespace Celebros\ConversionPro\Plugin;
 
+use Magento\Catalog\Model\Category;
 use Magento\Framework\DB\Select;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Celebros\ConversionPro\Helper\Data as Helper;
@@ -18,13 +19,22 @@ use Celebros\ConversionPro\Helper\Data as Helper;
 class Collection
 {
     /**
-     * @param \Celebros\ConversionPro\Helper\Data $helper
-     * @param \Magento\Catalog\Model\Category $catModel
-     * @return void
+     * @var Helper
+     */
+    private $helper;
+
+    /**
+     * @var Category
+     */
+    private $catModel;
+
+    /**
+     * @param Helper $helper
+     * @param Category $catModel
      */
     public function __construct(
         Helper $helper,
-        \Magento\Catalog\Model\Category $catModel
+        Category $catModel
     ) {
         $this->helper = $helper;
         $this->catModel = $catModel;
@@ -32,12 +42,12 @@ class Collection
 
     /**
      * @param \Magento\Catalog\Model\ResourceModel\Product\Collection $collection
-     * @param \Magento\Catalog\Model\Category $category
+     * @param Category $category
      * @return array
      */
     public function beforeAddCategoryFilter(
         ProductCollection $collection,
-        \Magento\Catalog\Model\Category $category
+        Category $category
     ) {
         if ($this->helper->isActiveEngine()) {
             $category = $this->catModel->load(

@@ -15,6 +15,9 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 
 class LogCleanup extends LogAbstract
 {
+    /**
+     * @inheritDoc
+     */
     public function logFileProcess()
     {
         if ($this->file->isWritable($this->filePath)) {
