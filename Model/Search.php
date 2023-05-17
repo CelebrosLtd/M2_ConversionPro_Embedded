@@ -225,7 +225,6 @@ class Search
         }
 
         // some mandatory arguments
-        $searchInfoXml->setAttribute('PriceFieldName', 'Price');
         $searchInfoXml->setAttribute('NumberOfPages', 9999999);
 
         return $searchInfoXml;
