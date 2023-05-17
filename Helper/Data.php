@@ -400,7 +400,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ScopeInterface::SCOPE_STORE,
             $store
         );
-        $value = empty($value) ? [] : explode(',', $value);
+        $value = empty($value) ? [] : explode(',', (string) $value);
 
         return $value;
     }
@@ -681,7 +681,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $group = $this->getCurrentCustomerGroup();
         if ($group && $groupCode = $group->getCode()) {
-            $groupCode = str_replace(" ", "_", $groupCode);
+            $groupCode = str_replace(" ", "_", (string) $groupCode);
 
             return strtolower($groupCode);
         }

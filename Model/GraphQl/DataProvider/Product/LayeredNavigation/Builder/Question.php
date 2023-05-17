@@ -92,13 +92,13 @@ class Question implements LayerBuilderInterface
         $result = [];
         foreach ($this->getAttributeBuckets($aggregation) as $bucket) {
             $bucketName = $bucket->getName();
-            $attributeCode = \preg_replace('~_bucket$~', '', $bucketName);
+            $attributeCode = \preg_replace('~_bucket$~', '', (string) $bucketName);
             $attribute = $attributeOptions[$attributeCode] ?? [];
 
             $result[$bucketName] = $this->layerFormatter->buildLayer(
                 $attribute['attribute_label'] ?? $bucketName,
                 \count($bucket->getValues()),
-                $attribute['attribute_code'] ?? str_replace(" ", "_", $bucketName)
+                $attribute['attribute_code'] ?? str_replace(" ", "_", (string) $bucketName)
             );
 
             foreach ($bucket->getValues() as $value) {
@@ -156,7 +156,7 @@ class Question implements LayerBuilderInterface
         $attributeOptionIds = [];
         $attributes = [];
         foreach ($this->getAttributeBuckets($aggregation) as $bucket) {
-            $attributes[] = \preg_replace('~_bucket$~', '', $bucket->getName());
+            $attributes[] = \preg_replace('~_bucket$~', '', (string) $bucket->getName());
             $attributeOptionIds[] = \array_map(
                 function (AggregationValueInterface $value) {
                     return $value->getValue();

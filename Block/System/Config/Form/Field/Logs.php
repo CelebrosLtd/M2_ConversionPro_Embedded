@@ -115,8 +115,8 @@ class Logs extends \Magento\Config\Block\System\Config\Form\Field
         $files = scandir($this->directoryList->getPath('log'));
         $result = [];
         foreach ($files as $key => $file) {
-            if (strpos($file, ".log") !== false) {
-                if (false !== strpos($file, self::LOG_FILE_PREFIX)) {
+            if (strpos((string) $file, ".log") !== false) {
+                if (false !== strpos((string) $file, self::LOG_FILE_PREFIX)) {
                     $result[] = $file;
                 }
             }

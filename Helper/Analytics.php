@@ -151,7 +151,7 @@ class Analytics extends Helper\AbstractHelper
      */
     public function parseAnalyticsResponse($body)
     {
-        return json_decode(str_replace(['anlxCallback(',');'], '', $body));
+        return json_decode(str_replace(['anlxCallback(',');'], '', (string) $body));
     }
 
     /**

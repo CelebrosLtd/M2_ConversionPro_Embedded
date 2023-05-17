@@ -560,7 +560,7 @@ class Search extends Helper\AbstractHelper
             if ($question->getAttribute('Id') == 'PriceQuestion') {
                 foreach ($question->Answers->Answer as $answer) {
                     $id = $answer->getAttribute('Id');
-                    if (preg_match('@^_P(\d+)_(\d+)$@', $id, $matches)) {
+                    if (preg_match('@^_P(\d+)_(\d+)$@', (string) $id, $matches)) {
                         $values[] = $matches[1];
                         $values[] = $matches[2];
                     }

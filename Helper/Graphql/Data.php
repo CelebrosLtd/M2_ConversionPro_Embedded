@@ -44,7 +44,7 @@ class Data extends \Celebros\ConversionPro\Helper\Data
         if ($this->isGraphql()) {
             $vars = $this->_request->getParam('variables', false);
             if ($vars) {
-                $vars = json_decode($vars, true);
+                $vars = json_decode((string) $vars, true);
                 if (isset($vars['currentPage'])) {
                     return (int) $vars['currentPage'];
                 }
@@ -59,7 +59,7 @@ class Data extends \Celebros\ConversionPro\Helper\Data
         if ($this->isGraphql()) {
             $vars = $this->_request->getParam('variables', false);
             if ($vars) {
-                $vars = json_decode($vars, true);
+                $vars = json_decode((string) $vars, true);
                 if (isset($vars['pageSize'])) {
                     return (int) $vars['pageSize'];
                 }
@@ -73,7 +73,7 @@ class Data extends \Celebros\ConversionPro\Helper\Data
     {
         if ($this->isGraphql()) {
             $opName = $this->getOpName();
-            return (bool) (strtolower($opName) == 'getcategories');
+            return (bool) (strtolower((string) $opName) == 'getcategories');
         }
 
         return (bool) ($this->getCurrentWorkHandle() == 'catalog_category');
@@ -83,7 +83,7 @@ class Data extends \Celebros\ConversionPro\Helper\Data
     {
         if ($this->isGraphql()) {
             $opName = $this->getOpName();
-            return (bool) (strtolower($opName) == 'productsearch');
+            return (bool) (strtolower((string) $opName) == 'productsearch');
         }
 
         return (bool) ($this->getCurrentWorkHandle() == 'catalogsearch_result');
@@ -101,20 +101,20 @@ class Data extends \Celebros\ConversionPro\Helper\Data
         ) {
             $vars = $this->_request->getParam('variables', false);
             if ($vars) {
-                $vars = json_decode($vars, true);
+                $vars = json_decode((string) $vars, true);
                 $catId = $vars['categoryIdFilter']['eq'];
                 return !$this->checkBlackList($catId);
             }
         }
 
-        return (strtolower($opName) === 'getproductfiltersbysearch');
+        return (strtolower((string) $opName) === 'getproductfiltersbysearch');
     }
 
     public function isAutoComplete(): bool
     {
         if ($this->isGraphql()) {
             $opName = $this->getOpName();
-            return (bool) (strtolower($opName) == 'getautocompleteresults');
+            return (bool) (strtolower((string) $opName) == 'getautocompleteresults');
         }
 
         return false;
@@ -124,7 +124,7 @@ class Data extends \Celebros\ConversionPro\Helper\Data
     {
         if ($this->isGraphql()) {
             $opName = $this->getOpName();
-            return (bool) (strtolower($opName) == 'getfilterinputs');
+            return (bool) (strtolower((string) $opName) == 'getfilterinputs');
         }
 
         return false;
@@ -135,7 +135,7 @@ class Data extends \Celebros\ConversionPro\Helper\Data
         if ($this->isGraphql()) {
             $vars = $this->_request->getParam('variables', false);
             if ($vars) {
-                $vars = json_decode($vars, true);
+                $vars = json_decode((string) $vars, true);
                 return (int) $vars['filters']['category_id']['eq'];
             }
 

@@ -139,7 +139,7 @@ class Question extends Layer\Filter\AbstractFilter
     {
         if (!$this->type) {
             if (!$type = $this->_checkSpecialType()) {
-                $type = (string) strtolower($this->getQuestion()->getAttribute('Type'));
+                $type = (string) strtolower((string) $this->getQuestion()->getAttribute('Type'));
             }
 
             $this->type = $type;

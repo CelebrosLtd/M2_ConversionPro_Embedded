@@ -45,7 +45,7 @@ class FilterAttributeReader
     ) : array {
         $allQuestions = $this->search->getAllQuestions()->Questions->Question;
         foreach ($allQuestions as $question) {
-            $attributeCode = str_replace(" ", "_", $question->getAttribute('SideText'));
+            $attributeCode = str_replace(" ", "_", (string) $question->getAttribute('SideText'));
             if ($attributeCode) {
                 $result['ProductAttributeFilterInput']['fields'][$attributeCode] = [
                     'name' => $attributeCode,
