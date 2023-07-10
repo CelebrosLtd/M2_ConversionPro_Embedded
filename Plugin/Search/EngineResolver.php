@@ -16,7 +16,12 @@ use Celebros\ConversionPro\Helper\Data as Helper;
 class EngineResolver
 {
     /**
-     * @param \Celebros\ConversionPro\Helper\Data $helper
+     * @var Helper
+     */
+    private $helper;
+
+    /**
+     * @param Helper $helper
      * @return void
      */
     public function __construct(

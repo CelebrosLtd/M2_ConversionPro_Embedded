@@ -16,6 +16,9 @@ use Celebros\ConversionPro\Model\Search\Adapter\Celebros\Adapter;
 
 class AdapterFactory extends \Magento\Search\Model\AdapterFactory
 {
+    /**
+     * @inheritDoc
+     */
     public function create(array $data = [])
     {
         $helper = $this->objectManager->get(Data::class);

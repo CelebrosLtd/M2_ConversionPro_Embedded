@@ -192,7 +192,7 @@ class Search
             if (!($name === null)) {
                 // create sorting options element
                 $fieldName = $this->getSortingFieldName($name);
-                $ascending = (strtolower($order) == 'desc') ? 'false' : 'true';
+                $ascending = (strtolower((string) $order) == 'desc') ? 'false' : 'true';
                 [$method, $isNumeric] = $this->getSortingMethod($name);
                 $sortingOptionsXml = $searchInfoXml->addChild('SortingOptions');
                 $sortingOptionsXml->setAttribute('FieldName', $fieldName);
@@ -275,10 +275,10 @@ class Search
     public function searchInfoXmlToHandle(XmlElement $xml)
     {
         $handle = '';
-        if (isset($xml->Query) && strlen($xml->Query) > 0) {
+        if (isset($xml->Query) && strlen((string) $xml->Query) > 0) {
             $handle .= 'A=' . $this->handleEscape($this->prepareSearchQueryForRequest($xml->Query)) . '~';
         }
-        if (isset($xml->OriginalQuery) && strlen($xml->OriginalQuery) > 0) {
+        if (isset($xml->OriginalQuery) && strlen((string) $xml->OriginalQuery) > 0) {
             $handle .= 'B=' . $this->handleEscape($this->prepareSearchQueryForRequest($xml->OriginalQuery)) . '~';
         }
         if (!empty($xml->getAttribute('CurrentPage'))) {
@@ -563,7 +563,7 @@ class Search
                 if ($field->getAttribute('name') == Data::RESPONSE_XML_LINK_ATTRIBUTE_NAME) {
                     $this->context->getRedirect()->redirect(
                         $this->context->getResponse(),
-                        $this->prepareUrlForRedirect(str_replace('http:', '', $field->getAttribute('value')))
+                        $this->prepareUrlForRedirect(str_replace('http:', '', (string) $field->getAttribute('value')))
                     );
                 }
             }
@@ -579,7 +579,7 @@ class Search
     public function prepareUrlForRedirect($rawUrl)
     {
         if (strpos($rawUrl, "//") !== false && strpos($rawUrl, "//") === 0) {
-            $rawUrl = substr_replace($rawUrl, null, 0, 2);
+            $rawUrl = substr_replace($rawUrl, '', 0, 2);
         }
 
         if (!preg_match("~^(?:f|ht)tps?://~i", $rawUrl)) {
@@ -711,7 +711,7 @@ class Search
     protected function getHostUrl()
     {
         $host = $this->helper->getHost() ?? '';
-        $host = preg_replace('@^http://@', '', $host);
+        $host = preg_replace('@^http://@', '', (string) $host);
         $host = 'http://' . rtrim($host);
 
         $port = $this->helper->getPort();

@@ -12,16 +12,20 @@
 namespace Celebros\ConversionPro\Plugin\CatalogGraphQl\Model\Resolver;
 
 use Magento\CatalogGraphQl\Model\Resolver\Products as ProductsResolver;
-use Celebros\ConversionPro\Helper\Data;
+use Celebros\ConversionPro\Helper\Data as Helper;
 
 class Products
 {
     /**
+     * @var Helper
+     */
+    private $helper;
+
+    /**
      * @param Helper $helper
-     * @return void
      */
     public function __construct(
-        Data $helper
+        Helper $helper
     ) {
         $this->helper = $helper;
     }

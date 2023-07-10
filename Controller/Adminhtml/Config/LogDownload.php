@@ -17,7 +17,15 @@ use Magento\Framework\App\Response\Http\FileFactory as ResponseFileFactory;
 class LogDownload extends LogAbstract
 {
     /**
-     * @param \Magento\Backend\App\Action\Context $context
+     * @var ResponseFileFactory
+     */
+    private $fileResponseFactory;
+
+    /**
+     * @param Context $context
+     * @param File $file
+     * @param DirectoryList $directoryList
+     * @param ResponseFileFactory $fileFactory
      */
     public function __construct(
         Context $context,
@@ -29,6 +37,10 @@ class LogDownload extends LogAbstract
         $this->fileResponseFactory = $fileFactory;
     }
 
+    /**
+     * @inheritDoc
+     * @throws \Magento\Framework\Exception\FileSystemException
+     */
     public function logFileProcess()
     {
         if ($this->file->isReadable($this->filePath)) {

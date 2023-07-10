@@ -37,11 +37,6 @@ class Search extends Helper\AbstractHelper
     /**#@-*/
 
     /**
-     * @var Data
-     */
-    protected $helper;
-
-    /**
      * @var array
      */
     protected $customResultsCache = [];
@@ -72,29 +67,14 @@ class Search extends Helper\AbstractHelper
     protected $order;
 
     /**
-     * @var Cache
-     */
-    protected $cache;
-
-    /**
-     * @var Category
-     */
-    protected $category;
-
-    /**
-     * @var array
-     */
-    protected $productAttributes = [];
-
-    /**
      * @var DataObject
      */
     protected $currentSearchParams;
 
     /**
-     * @var array
+     * @var Data
      */
-    public $appliedFilters = [];
+    protected $helper;
 
     /**
      * @var SearchModel
@@ -102,25 +82,24 @@ class Search extends Helper\AbstractHelper
     protected $search;
 
     /**
+     * @var ResponseFactory
+     */
+    protected $response;
+
+    /**
      * @param Helper\Context $context
      * @param Data $helper
-     * @param Cache $cache
      * @param SearchModel $search
-     * @param Category $category
      * @param ResponseFactory $response
      */
     public function __construct(
         Helper\Context $context,
         Data $helper,
-        CacheHelper $cache,
         SearchModel $search,
-        CategoryModel $category,
         ResponseFactory $response
     ) {
         $this->helper = $helper;
         $this->search = $search;
-        $this->cache = $cache;
-        $this->category = $category;
         $this->response = $response;
         parent::__construct($context);
     }
@@ -560,7 +539,7 @@ class Search extends Helper\AbstractHelper
             if ($question->getAttribute('Id') == 'PriceQuestion') {
                 foreach ($question->Answers->Answer as $answer) {
                     $id = $answer->getAttribute('Id');
-                    if (preg_match('@^_P(\d+)_(\d+)$@', $id, $matches)) {
+                    if (preg_match('@^_P(\d+)_(\d+)$@', (string) $id, $matches)) {
                         $values[] = $matches[1];
                         $values[] = $matches[2];
                     }

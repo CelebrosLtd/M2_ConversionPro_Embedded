@@ -23,26 +23,36 @@ use Magento\Store\Model\StoreManagerInterface;
 class Question extends Layer\Filter\AbstractFilter
 {
     /**
-     * @var Helper
+     * @var array
      */
-    protected $helper;
-
-    /**
-     * @var Helper
-     */
-    protected $searchHelper;
+    private $appliedFilters = [];
 
     /**
      * @var string
      */
-    protected $type;
+    private $type;
 
     /**
      * @var array
      */
-    protected $specialTypes = [
+    private $specialTypes = [
         'swatch' => '_checkSwatch'
     ];
+
+    /**
+     * @var Helper
+     */
+    private $helper;
+
+    /**
+     * @var Helper
+     */
+    private $searchHelper;
+
+    /**
+     * @var PriceHelper
+     */
+    private $priceHelper;
 
     /**
      * @param Layer\Filter\ItemFactory $filterItemFactory
@@ -84,7 +94,7 @@ class Question extends Layer\Filter\AbstractFilter
     public function apply(RequestInterface $request)
     {
         $filter = $this->searchHelper->getFilterValue($this->getRequestVar());
-        if (!empty($filter) && !in_array($filter, $this->searchHelper->appliedFilters)) {
+        if (!empty($filter) && !in_array($filter, $this->appliedFilters)) {
             $values = $this->searchHelper->filterValueToArray($filter);
             foreach ($values as $value) {
                 $text = $this->getOptionText($value);
@@ -94,7 +104,7 @@ class Question extends Layer\Filter\AbstractFilter
             }
 
             $this->_updateItems($values);
-            $this->searchHelper->appliedFilters[] = $filter;
+            $this->appliedFilters[] = $filter;
         }
     }
 
@@ -139,7 +149,7 @@ class Question extends Layer\Filter\AbstractFilter
     {
         if (!$this->type) {
             if (!$type = $this->_checkSpecialType()) {
-                $type = (string) strtolower($this->getQuestion()->getAttribute('Type'));
+                $type = (string) strtolower((string) $this->getQuestion()->getAttribute('Type'));
             }
 
             $this->type = $type;

@@ -15,8 +15,12 @@ use Magento\Search\Model\PopularSearchTerms as MagentoPopularSearchTerms;
 class PopularSearchTerms
 {
     /**
-     * @param \Celebros\ConversionPro\Helper\Data $helper
-     * @return void
+     * @var Helper
+     */
+    private $helper;
+
+    /**
+     * @param Helper $helper
      */
     public function __construct(
         Helper $helper

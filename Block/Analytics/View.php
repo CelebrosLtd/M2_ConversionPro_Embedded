@@ -86,7 +86,7 @@ class View extends Template
         //Set product click tracking params
         if (isset($product)) {
             $this->setProductSku($product->getSku());
-            $this->setProductName(str_replace("'", "\'", $product->getName()));
+            $this->setProductName(str_replace("'", "\'", (string) $product->getName()));
             $this->setProductPrice($product->getFinalPrice());
             $this->setWebsessionId($this->session->getSessionId());
         } else {
