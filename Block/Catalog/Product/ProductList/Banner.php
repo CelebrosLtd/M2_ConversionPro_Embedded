@@ -100,12 +100,13 @@ class Banner extends Template
      */
     protected function getParsedResponseBanner()
     {
-        $banner = new DataObject();
-        if (!$this->helper->isCampaignsEnabled(self::BANNER_CAMPAIGN_NAME)) {
-            return $banner;
+        if ($this->isResponseParsed) {
+            return $this->bannerImage;
         }
 
-        if ($this->isResponseParsed) {
+        $banner = new DataObject();
+
+        if (!$this->helper->isCampaignsEnabled(self::BANNER_CAMPAIGN_NAME)) {
             return $banner;
         }
 
@@ -140,6 +141,7 @@ class Banner extends Template
         }
 
         $this->isResponseParsed = true;
+        $this->bannerImage = $banner;
         return $banner;
     }
 }

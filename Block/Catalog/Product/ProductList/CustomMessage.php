@@ -102,13 +102,13 @@ class CustomMessage extends Template
      */
     protected function getParsedResponseMessage()
     {
+        if ($this->isResponseParsed) {
+            return $this->customMessage;
+        }
+
         $message = new DataObject();
 
         if (!$this->helper->isCampaignsEnabled(self::CAMPAIGN_NAME)) {
-            return $message;
-        }
-
-        if ($this->isResponseParsed) {
             return $message;
         }
 
@@ -132,6 +132,7 @@ class CustomMessage extends Template
         }
 
         $this->isResponseParsed = true;
-        return $message;
+        $this->customMessage = $message;
+        return $this->customMessage;
     }
 }
