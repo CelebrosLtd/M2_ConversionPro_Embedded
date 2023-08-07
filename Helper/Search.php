@@ -16,7 +16,7 @@ use Celebros\ConversionPro\Model\Search as SearchModel;
 use Magento\Catalog\Model\Category as CategoryModel;
 use Magento\Framework\App\Helper;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\App\ResponseFactory;
+use Magento\Framework\App\Response\Http as ResponseHttp;
 use Magento\Framework\DataObject;
 use Magento\Catalog\Model\Category;
 use Celebros\ConversionPro\Model\Config\Source\CategoryQueryType;
@@ -82,7 +82,7 @@ class Search extends Helper\AbstractHelper
     protected $search;
 
     /**
-     * @var ResponseFactory
+     * @var ResponseHttp
      */
     protected $response;
 
@@ -90,13 +90,13 @@ class Search extends Helper\AbstractHelper
      * @param Helper\Context $context
      * @param Data $helper
      * @param SearchModel $search
-     * @param ResponseFactory $response
+     * @param ResponseHttp $response
      */
     public function __construct(
         Helper\Context $context,
         Data $helper,
         SearchModel $search,
-        ResponseFactory $response
+        ResponseHttp $response
     ) {
         $this->helper = $helper;
         $this->search = $search;
@@ -204,9 +204,8 @@ class Search extends Helper\AbstractHelper
             foreach ($concept->DynamicProperties->children() as $property) {
                 if ($property->getAttribute('name') == self::REDIRECT_DYNAMIC_PROPERTY_NAME) {
                     $this->response
-                        ->create()
                         ->setRedirect($property->getAttribute('value'))
-                        ->sendResponse();
+                        ->sendHeaders();
                     return true;
                 }
             }
