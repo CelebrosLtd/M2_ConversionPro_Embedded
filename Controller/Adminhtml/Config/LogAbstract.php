@@ -21,7 +21,7 @@ abstract class LogAbstract extends Action
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Celebros_ConversionPro::config_conversionpro';
+    public const ADMIN_RESOURCE = 'Celebros_ConversionPro::config_conversionpro';
 
     /**
      * @var string
@@ -32,6 +32,16 @@ abstract class LogAbstract extends Action
      * @var string
      */
     protected $filePath = '';
+
+    /**
+     * @var File
+     */
+    protected $file;
+
+    /**
+     * @var DirectoryList
+     */
+    protected $directoryList;
 
     /**
      * @param \Magento\Backend\App\Action\Context $context
@@ -49,6 +59,9 @@ abstract class LogAbstract extends Action
         $this->directoryList = $directoryList;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function execute()
     {
         if ($this->fileName = $this->getRequest()->getParam('filename', false)) {
@@ -65,5 +78,10 @@ abstract class LogAbstract extends Action
         );
     }
 
+    /**
+     * Process log file
+     *
+     * @return void
+     */
     abstract public function logFileProcess();
 }

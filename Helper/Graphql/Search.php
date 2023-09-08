@@ -48,7 +48,7 @@ class Search extends \Celebros\ConversionPro\Helper\Search
     public function getValueFromRequest($requestVar)
     {
         $variables = $this->_getRequest()->getParam('variables', false);
-        $variables = json_decode($variables, true);
+        $variables = json_decode((string) $variables, true);
         $filters = $variables['filters'] ?? [];
         $result = null;
         if (isset($filters[$requestVar])) {

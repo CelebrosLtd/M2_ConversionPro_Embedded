@@ -107,6 +107,6 @@ class Item extends \Magento\Catalog\Model\Layer\Filter\Item
     public function isSelected()
     {
         $previous_search = $this->searchHelper->getFilterValue($this->getFilter()->getRequestVar());
-        return $previous_search && in_array($this->getValue(), explode(',', $previous_search));
+        return $previous_search && in_array($this->getValue(), explode(',', (string) $previous_search));
     }
 }

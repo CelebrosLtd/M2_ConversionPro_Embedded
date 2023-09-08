@@ -16,7 +16,7 @@ use Celebros\ConversionPro\Model\Search as SearchModel;
 use Magento\Catalog\Model\Category as CategoryModel;
 use Magento\Framework\App\Helper;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\App\ResponseFactory;
+use Magento\Framework\App\Response\Http as ResponseHttp;
 use Magento\Framework\DataObject;
 use Magento\Catalog\Model\Category;
 use Celebros\ConversionPro\Model\Config\Source\CategoryQueryType;
@@ -35,11 +35,6 @@ class Search extends Helper\AbstractHelper
     public const CACHE_ID = 'conversionpro';
     public const REDIRECT_DYNAMIC_PROPERTY_NAME = 'redirection url';
     /**#@-*/
-
-    /**
-     * @var Data
-     */
-    protected $helper;
 
     /**
      * @var array
@@ -72,29 +67,14 @@ class Search extends Helper\AbstractHelper
     protected $order;
 
     /**
-     * @var Cache
-     */
-    protected $cache;
-
-    /**
-     * @var Category
-     */
-    protected $category;
-
-    /**
-     * @var array
-     */
-    protected $productAttributes = [];
-
-    /**
      * @var DataObject
      */
     protected $currentSearchParams;
 
     /**
-     * @var array
+     * @var Data
      */
-    public $appliedFilters = [];
+    protected $helper;
 
     /**
      * @var SearchModel
@@ -102,25 +82,24 @@ class Search extends Helper\AbstractHelper
     protected $search;
 
     /**
+     * @var ResponseHttp
+     */
+    protected $response;
+
+    /**
      * @param Helper\Context $context
      * @param Data $helper
-     * @param Cache $cache
      * @param SearchModel $search
-     * @param Category $category
-     * @param ResponseFactory $response
+     * @param ResponseHttp $response
      */
     public function __construct(
         Helper\Context $context,
         Data $helper,
-        CacheHelper $cache,
         SearchModel $search,
-        CategoryModel $category,
-        ResponseFactory $response
+        ResponseHttp $response
     ) {
         $this->helper = $helper;
         $this->search = $search;
-        $this->cache = $cache;
-        $this->category = $category;
         $this->response = $response;
         parent::__construct($context);
     }
@@ -225,9 +204,8 @@ class Search extends Helper\AbstractHelper
             foreach ($concept->DynamicProperties->children() as $property) {
                 if ($property->getAttribute('name') == self::REDIRECT_DYNAMIC_PROPERTY_NAME) {
                     $this->response
-                        ->create()
                         ->setRedirect($property->getAttribute('value'))
-                        ->sendResponse();
+                        ->sendHeaders();
                     return true;
                 }
             }
@@ -560,7 +538,7 @@ class Search extends Helper\AbstractHelper
             if ($question->getAttribute('Id') == 'PriceQuestion') {
                 foreach ($question->Answers->Answer as $answer) {
                     $id = $answer->getAttribute('Id');
-                    if (preg_match('@^_P(\d+)_(\d+)$@', $id, $matches)) {
+                    if (preg_match('@^_P(\d+)_(\d+)$@', (string) $id, $matches)) {
                         $values[] = $matches[1];
                         $values[] = $matches[2];
                     }

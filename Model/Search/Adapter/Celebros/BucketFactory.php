@@ -54,7 +54,7 @@ class BucketFactory
         return $this->objectManager->create(
             \Magento\Framework\Search\Response\Bucket::class,
             [
-                'name' => ($label == 'Price') ? strtolower($label) : $label,
+                'name' => ($label == 'Price') ? strtolower((string) $label) : $label,
                 'values' => $values
             ]
         );

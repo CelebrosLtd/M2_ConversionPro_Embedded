@@ -106,6 +106,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $groupRepository;
 
+    /**
+     * @param Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\App\State $state
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param PricingHelper $priceHelper
+     * @param \Magento\Framework\UrlInterface $urlInterface
+     * @param \Celebros\Main\Helper\Debug $debug
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Magento\Customer\Api\GroupRepositoryInterface $groupRepository
+     */
     public function __construct(
         Context $context,
         \Magento\Framework\Registry $registry,
@@ -400,7 +411,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ScopeInterface::SCOPE_STORE,
             $store
         );
-        $value = empty($value) ? [] : explode(',', $value);
+        $value = empty($value) ? [] : explode(',', (string) $value);
 
         return $value;
     }
@@ -681,7 +692,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $group = $this->getCurrentCustomerGroup();
         if ($group && $groupCode = $group->getCode()) {
-            $groupCode = str_replace(" ", "_", $groupCode);
+            $groupCode = str_replace(" ", "_", (string) $groupCode);
 
             return strtolower($groupCode);
         }

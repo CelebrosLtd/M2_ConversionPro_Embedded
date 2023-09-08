@@ -23,15 +23,25 @@ use Celebros\ConversionPro\Helper\Data;
 class FilterAttributeReader
 {
     /**
+     * @var Search
+     */
+    private $search;
+
+    /**
+     * @var Data
+     */
+    private $helper;
+
+    /**
      * @param Search $search
      * @return void
      */
     public function __construct(
         Search $search,
-        Data $data
+        Data $helper
     ) {
         $this->search = $search;
-        $this->data = $data;
+        $this->helper = $helper;
     }
 
     /**
@@ -45,7 +55,7 @@ class FilterAttributeReader
     ) : array {
         $allQuestions = $this->search->getAllQuestions()->Questions->Question;
         foreach ($allQuestions as $question) {
-            $attributeCode = str_replace(" ", "_", $question->getAttribute('SideText'));
+            $attributeCode = str_replace(" ", "_", (string) $question->getAttribute('SideText'));
             if ($attributeCode) {
                 $result['ProductAttributeFilterInput']['fields'][$attributeCode] = [
                     'name' => $attributeCode,

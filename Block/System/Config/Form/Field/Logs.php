@@ -14,12 +14,7 @@ use \Magento\Framework\Data\Form\Element\AbstractElement;
 
 class Logs extends \Magento\Config\Block\System\Config\Form\Field
 {
-    const LOG_FILE_PREFIX = 'celebros_';
-
-    /**
-     * @var DirectoryList
-     */
-    protected $directoryList;
+    public const LOG_FILE_PREFIX = 'celebros_';
 
     /**
      * @var array
@@ -28,6 +23,11 @@ class Logs extends \Magento\Config\Block\System\Config\Form\Field
         'download' => 'Download',
         'cleanup' => 'Delete'
     ];
+
+    /**
+     * @var DirectoryList
+     */
+    protected $directoryList;
 
     /**
      * @param \Magento\Backend\Block\Template\Context $context
@@ -115,8 +115,8 @@ class Logs extends \Magento\Config\Block\System\Config\Form\Field
         $files = scandir($this->directoryList->getPath('log'));
         $result = [];
         foreach ($files as $key => $file) {
-            if (strpos($file, ".log") !== false) {
-                if (false !== strpos($file, self::LOG_FILE_PREFIX)) {
+            if (strpos((string) $file, ".log") !== false) {
+                if (false !== strpos((string) $file, self::LOG_FILE_PREFIX)) {
                     $result[] = $file;
                 }
             }

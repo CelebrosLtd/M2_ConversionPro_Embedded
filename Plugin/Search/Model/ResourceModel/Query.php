@@ -17,8 +17,12 @@ use Magento\Search\Model\Query as QueryModel;
 class Query
 {
     /**
-     * @param \Celebros\ConversionPro\Helper\Data $helper
-     * @return void
+     * @var Helper
+     */
+    private $helper;
+
+    /**
+     * @param Helper $helper
      */
     public function __construct(
         Helper $helper
@@ -45,22 +49,4 @@ class Query
 
         return $proceed($object, $value);
     }
-
-    /**
-     * @param MagentoResourceModelQuery $resourceQuery
-     * @param callable $proceed
-     * @param QueryModel $query
-     * @return void
-     */
-    /*public function aroundSaveNumResults(
-        MagentoResourceModelQuery $resourceQuery,
-        callable $proceed,
-        QueryModel $query
-    ) {
-        if ($this->helper->isActiveEngine() && $this->helper->isPermittedHandle()) {
-            return;
-        }
-
-        return $proceed($query);
-    }*/
 }
