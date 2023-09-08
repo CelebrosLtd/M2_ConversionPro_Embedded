@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 1.5.6 - 2023-09-08
+
+### FIXES
+- Add Magento 2.4.6 and PHP 8.2 compatibility in https://github.com/CelebrosLtd/M2_ConversionPro_Embedded/pull/6
+  Refs #SSUITE-895
+- fix: Change null to strict string defined function call PHP 8.1
+- fix: Add missing dynamic properties PHP 8.2
+- fix: banner and custom messages are not displayed in https://github.com/CelebrosLtd/M2_ConversionPro_Embedded/pull/7
+- fix: url redirects not working in https://github.com/CelebrosLtd/M2_ConversionPro_Embedded/pull/8
+  
+
 ## 1.5.5 - 2023-05-17
 
 ### FIXES
