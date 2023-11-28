@@ -54,6 +54,10 @@ class FilterAttributeReader
         array $result
     ) : array {
         $allQuestions = $this->search->getAllQuestions()->Questions->Question;
+        if (empty($allQuestions)) {
+            return $result;
+        }
+
         foreach ($allQuestions as $question) {
             $attributeCode = str_replace(" ", "_", (string) $question->getAttribute('SideText'));
             if ($attributeCode) {

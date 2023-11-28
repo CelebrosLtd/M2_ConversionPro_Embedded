@@ -117,6 +117,10 @@ class ResponseFactory
      */
     public function prepareEntityRowIdMapping($products)
     {
+        if (!count($products->children())) {
+            return [];
+        }
+
         $ids = [];
         foreach ($products->children() as $rawDocument) {
             foreach ($rawDocument->Fields->children() as $rawField) {
@@ -129,6 +133,10 @@ class ResponseFactory
             }
         }
 
+        if (!count($ids)) {
+            return [];
+        }
+
         $productMetadata = $this->objectManager->get(ProductMetadataInterface::class);
         if ($productMetadata->getEdition() == 'Community') {
             return $ids;
@@ -137,6 +145,7 @@ class ResponseFactory
         $products = $this->objectManager->create(Product::class);
         $collection = $products->getCollection()
             ->addFieldToFilter('row_id', $ids);
+
 
         $mapping = [];
         foreach ($collection as $item) {

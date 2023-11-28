@@ -465,26 +465,33 @@ class Search extends Helper\AbstractHelper
     /**
      * @param $value
      * @param $field
-     * @return false|XmlElement|\SimpleXMLElement|null
+     * @return XmlElement|\SimpleXMLElement|null
      */
     public function getQuestionByField($value, $field)
     {
         $allQuestions = $this->getAllQuestions()->Questions->Question;
+        if (empty($allQuestions)) {
+            return null;
+        }
+
         foreach ($allQuestions as $question) {
             if (in_array($value, $this->getAltRequestVars($question->getAttribute($field)))) {
                 return $question;
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
-     * @return XmlElement|\SimpleXMLElement|void|null
+     * @return XmlElement|\SimpleXMLElement|null
      */
     public function getPriceQuestionMock()
     {
         $allQuestions = $this->getAllQuestions()->Questions->Question;
+        if (empty($allQuestions)) {
+            return null;
+        }
         foreach ($allQuestions as $question) {
             $mock = clone $question;
             $mock->setAttribute('Id', 'PriceQuestion');
