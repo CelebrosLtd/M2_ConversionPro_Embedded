@@ -7,7 +7,7 @@
  * If you wish to customize it, please contact Celebros.
  */
 
-.celebros-price-min,
-.celebros-price-max {
-    width: 25% !important;
+.celebros-range-layered-inputs .celebros-input-min,
+.celebros-range-layered-inputs .celebros-input-max {
+    width: 25%;
 }

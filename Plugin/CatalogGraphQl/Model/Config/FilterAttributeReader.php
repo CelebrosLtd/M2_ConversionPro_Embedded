@@ -53,7 +53,7 @@ class FilterAttributeReader
         \Magento\CatalogGraphQl\Model\Config\FilterAttributeReader $reader,
         array $result
     ) : array {
-        $allQuestions = $this->search->getAllQuestions()->Questions->Question;
+        $allQuestions = $this->search->getAllQuestions();
         if (empty($allQuestions)) {
             return $result;
         }

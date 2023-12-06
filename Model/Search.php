@@ -236,7 +236,7 @@ class Search
      * @param string $varName
      * @return bool
      */
-    public function validateRequestVar(string $varName) : bool
+    protected function validateRequestVar(string $varName) : bool
     {
         $questions = $this->getAllQuestions();
         $names = ['price'];

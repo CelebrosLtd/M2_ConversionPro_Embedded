@@ -9,7 +9,7 @@
  */
 namespace Celebros\ConversionPro\Model\Config\Source;
 
-class PriceFilterTypes
+class RangeFilterTypes
 {
     const DEF = 'default';
     const INPUTS = 'inputs';

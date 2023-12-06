@@ -13,6 +13,6 @@
     <head>
         <css src="Celebros_ConversionPro::css/filter/default.css" />
         <css src="Celebros_ConversionPro::css/filter/swatch.css" />
-        <css src="Celebros_ConversionPro::css/filter/price.css" />
+        <css src="Celebros_ConversionPro::css/filter/ranges.css" />
     </head>
 </page>
