@@ -76,7 +76,7 @@ class RequestGenerator
         $request = [];
         $qNames = [];
         foreach ($allQuestions as $question) {
-            $name = $question->getAttribute('Text');
+            $name = $question->getAttribute('SideText');
             if (in_array($name, $qNames)) {
                 continue;
             }
