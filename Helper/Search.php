@@ -154,7 +154,7 @@ class Search extends Helper\AbstractHelper
      * Get Custom search results
      *
      * @param DataObject|null $params
-     * @return false|XmlElement|mixed|\SimpleXMLElement
+     * @return false|XmlElement
      * @throws NoSuchEntityException
      */
     public function getCustomResults(DataObject $params = null)
@@ -230,7 +230,7 @@ class Search extends Helper\AbstractHelper
      * Get Question answers
      *
      * @param string $questionId
-     * @return false|XmlElement|mixed|\SimpleXMLElement
+     * @return false|XmlElement
      */
     public function getQuestionAnswers($questionId)
     {

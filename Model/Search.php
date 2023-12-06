@@ -453,7 +453,7 @@ class Search
      * Perform search
      *
      * @param string $query
-     * @return false|XmlElement|\SimpleXMLElement
+     * @return false|XmlElement
      */
     public function search($query)
     {
@@ -482,7 +482,7 @@ class Search
      * @param string $searchHandle
      * @param bool $isNewSearch
      * @param string $previousSearchHandle
-     * @return false|XmlElement|\SimpleXMLElement
+     * @return false|XmlElement
      */
     public function getCustomResults($searchHandle, $isNewSearch, $previousSearchHandle = '')
     {
@@ -623,7 +623,7 @@ class Search
     /**
      * Request all questions
      *
-     * @return false|XmlElement|\SimpleXMLElement|string
+     * @return false|XmlElement
      */
     public function getAllQuestions()
     {
@@ -643,7 +643,7 @@ class Search
      * Request question answers
      *
      * @param string $questionId
-     * @return false|XmlElement|\SimpleXMLElement
+     * @return false|XmlElement
      */
     public function getQuestionAnswers($questionId)
     {
@@ -659,7 +659,7 @@ class Search
      * Do search request through API
      *
      * @param string $request
-     * @return false|XmlElement|\SimpleXMLElement
+     * @return false|XmlElement
      */
     protected function request($request)
     {
@@ -734,7 +734,7 @@ class Search
      * Parse XML response
      *
      * @param string $response
-     * @return false|XmlElement|\SimpleXMLElement
+     * @return false|XmlElement
      */
     public function parseXmlResponse($response)
     {
