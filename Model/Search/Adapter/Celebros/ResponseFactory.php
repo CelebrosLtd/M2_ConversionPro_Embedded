@@ -111,7 +111,7 @@ class ResponseFactory
      * @param iterable|XmlElement $products
      * @return array
      */
-    private function prepareEntityRowIdMapping(iterable|XmlElement $products): array
+    private function prepareEntityRowIdMapping(iterable $products): array
     {
         $ids = [];
         foreach ($products as $rawDocument) {

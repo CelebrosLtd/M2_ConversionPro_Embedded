@@ -225,8 +225,8 @@ class Question extends Layer\Filter\AbstractFilter
      */
     protected function getOptionText($optionId)
     {
-        if ($this->_isPrice()) {
-            return $this->parseAndPreparePriceLabel($optionId);
+        if ($this->_isRange()) {
+            return $this->parseAndPrepareRangeLabel($optionId);
         }
 
         if ($this->hasAnswers()) {
@@ -283,6 +283,15 @@ class Question extends Layer\Filter\AbstractFilter
     }
 
     /**
+     * @return bool
+     */
+    protected function _isRange()
+    {
+        return $this->hasQuestion()
+            && ($this->getQuestion()->getAttribute('Type') == 'Range' || $this->_isPrice());
+    }
+
+    /**
      * @param XmlElement $answer
      * @return string
      */
@@ -291,9 +300,9 @@ class Question extends Layer\Filter\AbstractFilter
         string $position = null
     ): string {
         $text = $answer->getAttribute('Text');
-        if ($this->_isPrice()) {
+        if ($this->_isRange()) {
             $id = $answer->getAttribute('Id');
-            $text = $this->parseAndPreparePriceLabel($id, $position);
+            $text = $this->parseAndPrepareRangeLabel($id, $position);
         }
 
         return $text;
@@ -303,24 +312,37 @@ class Question extends Layer\Filter\AbstractFilter
      * @param string $string
      * @return string|null
      */
-    protected function parseAndPreparePriceLabel(
+    protected function parseAndPrepareRangeLabel(
         string $string,
         string $position = null
     ): ?string {
-        if (preg_match('@^_P(\d+)_(\d+)$@', $string, $matches)) {
-            if (count($matches) == 3) {
+        $pattern = Helper::RANGE_ANSWER_PATTERN;
+        if (preg_match($pattern, $string, $matches)) {
+            if (count($matches) == 4) {
                 if ($position == 'first') {
-                    return __('under') . " " . $this->priceHelper->currency($matches[2], true, false);
+                    return __('under') . " " . $this->formatRangeAnswerValue($matches[3]);
                 } elseif ($position == 'last') {
-                    return __('over') . " " . $this->priceHelper->currency($matches[1], true, false);
+                    return __('over') . " " . $this->formatRangeAnswerValue($matches[2]);
                 } else {
-                    return $this->priceHelper->currency($matches[1], true, false)
-                        . " - " . $this->priceHelper->currency($matches[2], true, false);
+                    return $this->formatRangeAnswerValue($matches[2])
+                        . " - " . $this->formatRangeAnswerValue($matches[3]);
                 }
             }
         }
 
         return null;
+    }
+
+    /**
+     * @param string|int|float $value
+     * @return string|int|float
+     */
+    protected function formatRangeAnswerValue($value)
+    {
+        if ($this->_isPrice()) {
+            $value = $this->priceHelper->currency($value, true, false);
+        }
+        return $value;
     }
 
     /**

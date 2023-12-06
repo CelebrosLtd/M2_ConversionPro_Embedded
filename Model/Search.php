@@ -242,7 +242,7 @@ class Search
         $names = ['price'];
         if (!empty($questions->Questions)) {
             foreach ($questions->Questions->children() as $question) {
-                $names = array_merge($names, $this->getAltRequestVars($question->getAttribute('Text')));
+                $names = array_merge($names, $this->getAltRequestVars($question->getAttribute('SideText')));
             }
         }
 

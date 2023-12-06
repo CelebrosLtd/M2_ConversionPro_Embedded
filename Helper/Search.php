@@ -343,11 +343,12 @@ class Search extends Helper\AbstractHelper
     {
         $requestVar = str_replace('.', '_', $requestVar);
 
-        return [
+        return array_unique([
             $requestVar,
             str_replace(' ', '_', $requestVar),
-            str_replace(' ', '+', $requestVar)
-        ];
+            str_replace(' ', '+', $requestVar),
+            strtolower($requestVar)
+        ]);
     }
 
     /**
@@ -395,10 +396,10 @@ class Search extends Helper\AbstractHelper
     {
         $names = ['price'];
         foreach ($this->getAllQuestions() as $question) {
-            $names[] = $question->getAttribute('Text');
+            $names[] = $question->getAttribute('SideText');
         }
 
-        return $names;
+        return array_filter($names);
     }
 
     /**
