@@ -1,0 +1,91 @@
+<?php
+/**
+ * Celebros (C) 2023. All Rights Reserved.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish correct extension functionality.
+ * If you wish to customize it, please contact Celebros.
+ */
+declare(strict_types=1);
+
+use Celebros\ConversionPro\Block\LayeredNavigation\Navigation\FilterRenderer;
+use Celebros\ConversionPro\Helper\Data;
+use Celebros\ConversionPro\Helper\Search as SearchHelper;
+use Magento\Catalog\Model\Layer\Filter\Item;
+
+/** @var Item[]  $filterItems */
+/** @var string  $questionId Celebros question ID */
+/** @var string  $requestVar filter request variable name */
+/** @var string  $questionType question type */
+/** @var FilterRenderer $block */
+/** @var Data $helper */
+$helper = $this->helper('\Celebros\ConversionPro\Helper\Data');
+/** @var SearchHelper $sHelper */
+$sHelper = $this->helper('\Celebros\ConversionPro\Helper\Search');
+?>
+<!--Default-->
+<div class="celebros-range-layered"></div>
+<?php if ($sHelper->isRangeDefault($questionId)): ?>
+<ol class="items">
+    <?php foreach ($filterItems as $key => $filterItem): ?>
+        <li class="item<?php if ($filterItem->isSelected()): ?> selected<?php endif; ?>">
+            <?php if ($filterItem->getCount() > 0): ?>
+                <?php if ($helper->isMultiselectEnabled()): ?>
+                    <input type="checkbox" data-href="<?php echo $block->escapeUrl($filterItem->getUrl()) ?>" onclick="convpro.clickCheckbox(this)"<?php if ($filterItem->isSelected()): ?> checked="checked"<?php endif; ?>>
+                <?php endif; ?>
+                <a href="<?php echo $block->escapeUrl($filterItem->getUrl()) ?>" onclick="convpro.clickHLink(this)">
+                    <?php echo $filterItem->getLabel() ?>
+                    <?php if ($this->helper('\Magento\Catalog\Helper\Data')->shouldDisplayProductCountOnLayer()): ?>
+                        <span class="count"><?php echo $filterItem->getCount()?><span class="filter-count-label">
+            <?php if ($filterItem->getCount() == 1):?>
+                <?php echo __('item') ?>
+            <?php else:?>
+                <?php echo __('items') ?>
+            <?php endif;?>
+            </span></span>
+                    <?php endif; ?>
+                </a>
+            <?php else:?>
+                <?php echo $filterItem->getLabel() ?>
+                <?php if ($this->helper('\Magento\Catalog\Helper\Data')->shouldDisplayProductCountOnLayer()): ?>
+                    <span class="count">(<?php echo $filterItem->getCount()?>)<span class="filter-count-label">
+            <?php if ($filterItem->getCount() == 1):?>
+                <?php echo __('item')?><?php else:?><?php echo __('items') ?>
+            <?php endif;?>
+        </span></span>
+                <?php endif; ?>
+            <?php endif; ?>
+        </li>
+    <?php endforeach ?>
+</ol>
+<?php endif; ?>
+<!--Range-->
+<?php if ($sHelper->getRangeMinValue($questionId) !== false && $sHelper->isRangeInputs($questionId)): ?>
+<div class="celebros-range-layered-inputs"
+     data-role="celebros-range-inputs"
+     data-request-var="<?= $requestVar ?>"
+     data-value-suffix="<?= $sHelper->getRangeValueSuffix($questionId) ?>">
+    <input data-role="inputs-min" data-min-range="<?php echo $sHelper->getRangeMinValue($questionId) ?>" placeholder="<?php echo $sHelper->getRangeMinValue($questionId) ?>" class="input-text celebros-input-min" maxlength="4" type="number"><span> <?php echo __('to') ?> </span>
+    <input data-role="inputs-max" data-max-range="<?php echo $sHelper->getRangeMaxValue($questionId) ?>" placeholder="<?php echo $sHelper->getRangeMaxValue($questionId) ?>" class="input-text celebros-input-max" maxlength="4" type="number">
+    <button class="action search" type="submit" title="<?php echo __('Search') ?>" disabled>
+        <span><?php echo __('Filter') ?></span>
+    </button>
+</div>
+<?php endif; ?>
+<!--Slider-->
+<?php if ($sHelper->isRangeSlider($questionId)): ?>
+<div class="celebros-range-layered-slider"
+     data-role="celebros-range-slider"
+     data-request-var="<?= $requestVar ?>"
+     data-value-suffix="<?= $sHelper->getRangeValueSuffix($questionId) ?>"
+     data-min-range="<?php echo $sHelper->getRangeMinValue($questionId) ?>"
+     data-max-range="<?php echo $sHelper->getRangeMaxValue($questionId) ?>"
+     data-type="<?= $questionType ?>">
+    <div data-role="slider"></div>
+    <div data-role="slider-amount"></div>
+    <button class="action search" type="submit" title="<?php echo __('Apply') ?>" disabled>
+        <span><?php echo __('Apply') ?></span>
+    </button>
+</div>
+<?php endif; ?>

@@ -20,6 +20,9 @@ use Magento\Framework\Pricing\Helper\Data as PriceHelper;
 use Magento\Framework\Simplexml\Element as XmlElement;
 use Magento\Store\Model\StoreManagerInterface;
 
+/**
+ * @method getQuestion()
+ */
 class Question extends Layer\Filter\AbstractFilter
 {
     /**

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Celebros (C) 2023. All Rights Reserved.
  *
@@ -20,7 +19,8 @@ class FilterRenderer extends \Magento\LayeredNavigation\Block\Navigation\FilterR
     protected $templateByType = [
         'default' => 'default.phtml',
         'swatch' => 'swatch.phtml',
-        'price' => 'price.phtml'
+        'price' => 'range.phtml',
+        'range' => 'range.phtml'
     ];
 
     /**
@@ -32,7 +32,9 @@ class FilterRenderer extends \Magento\LayeredNavigation\Block\Navigation\FilterR
         $type = $filter->getType();
         $this->setTemplate($this->getTemplateByType($type));
         $this->assign('filterItems', $filter->getItems());
-        $this->assign('filterType', $filter->getRequestVar());
+        $this->assign('requestVar', $filter->getRequestVar());
+        $this->assign('questionId', $filter->getQuestion()->getAttribute('Id'));
+        $this->assign('questionType', $filter->getType());
         $html = $this->_toHtml();
         $this->assign('filterItems', []);
 

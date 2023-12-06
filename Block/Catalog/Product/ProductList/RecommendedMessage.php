@@ -71,7 +71,7 @@ class RecommendedMessage extends Template
     /**
      * Get Search results response
      *
-     * @return false|XmlElement|mixed|\SimpleXMLElement
+     * @return false|XmlElement
      */
     protected function getResponse()
     {

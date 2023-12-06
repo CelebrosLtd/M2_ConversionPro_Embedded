@@ -15,8 +15,7 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Catalog\Model\Category;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Store\Model\ScopeInterface;
-use Magento\Framework\Message\MessageInterface as MessageInterface;
-use Celebros\ConversionPro\Model\Config\Source\PriceFilterTypes;
+use Celebros\ConversionPro\Model\Config\Source\RangeFilterTypes;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -568,17 +567,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function isPriceDefault($store = null): bool
     {
-        return in_array(PriceFilterTypes::DEF, $this->getFilterType($store));
+        return in_array(RangeFilterTypes::DEF, $this->getFilterType($store));
     }
 
     public function isPriceSlider($store = null): bool
     {
-        return in_array(PriceFilterTypes::SLIDER, $this->getFilterType($store));
+        return in_array(RangeFilterTypes::SLIDER, $this->getFilterType($store));
     }
 
     public function isPriceInputs($store = null): bool
     {
-        return in_array(PriceFilterTypes::INPUTS, $this->getFilterType($store));
+        return in_array(RangeFilterTypes::INPUTS, $this->getFilterType($store));
     }
 
     public function getPriceUrlTemplate()
