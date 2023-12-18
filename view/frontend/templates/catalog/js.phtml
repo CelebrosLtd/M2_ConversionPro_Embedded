@@ -1,5 +1,22 @@
-<?php $helper = $this->helper('\Celebros\ConversionPro\Helper\Data'); ?>
-<?php $sHelper = $this->helper('\Celebros\ConversionPro\Helper\Search'); ?>
+<?php
+/**
+ * Celebros (C) 2023. All Rights Reserved.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish correct extension functionality.
+ * If you wish to customize it, please contact Celebros.
+ */
+
+use Celebros\ConversionPro\Helper\Data as Helper;
+use Celebros\ConversionPro\Helper\Search as SearchHelper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+/** @var Helper $helper */
+$helper = $this->helper('\Celebros\ConversionPro\Helper\Data'); ?>
+<?php /** @var SearchHelper $sHelper */
+$sHelper = $this->helper('\Celebros\ConversionPro\Helper\Search'); ?>
 <script type="text/x-magento-init">
 {
     "*": {
@@ -25,32 +42,22 @@
                 "search": {
                     "status" : <?php echo $helper->toJsBool($helper->isFilterSearchEnabled()) ?>,
                     "selectors": {
-                        "filtersList": "#narrow-by-list .filter-options-content"
+                        "filtersList": "#narrow-by-list .filter-options-content",
+                        "ignoredClasses": [".swatch-attribute", ".celebros-price-layered", ".celebros-range-layered"]
                     },
                     "options": {
                         "minSearchFilterQty" : <?php echo (int) $helper->getMinQtyForFilterSearch() ?>
                     }
-                },
-                "price-inputs": {
-                    "status" : <?php echo $helper->toJsBool($helper->isPriceInputs()) ?>,
-                    "selectors": {},
-                    "options": {}
-                },
-                "price-slider": {
-                    "status" : <?php echo $helper->toJsBool($helper->isPriceSlider()) ?>,
-                    "selectors": {
-                        "sliderElement": "#celebros-price-slider",
-                        "sliderAmount": "#celebros-price-slider-amount"
-                    },
-                    "options": {
-                        "minPrice": <?php echo $sHelper->getMinMaxPrices('min') ? : 0 ?>,
-                        "maxPrice": <?php echo $sHelper->getMinMaxPrices('max') ? : 0?>,
-                        "currentMinPrice": <?php echo $sHelper->getMinMaxPrices('min') ? : 0 ?>,
-                        "currentMaxPrice": <?php echo $sHelper->getMinMaxPrices('max') ? : 0 ?>,
-                        "amountHtml": "{min_val} - {max_val}"
-                    }
                 }
             }
+        }
+    },
+    "[data-role=celebros-range-inputs], [data-role=celebros-price-inputs]": {
+        "Celebros_ConversionPro/js/filter/range-inputs": {
+        }
+    },
+    "[data-role=celebros-range-slider], [data-role=celebros-price-slider]": {
+        "Celebros_ConversionPro/js/filter/range-slider": {
         }
     }
 }

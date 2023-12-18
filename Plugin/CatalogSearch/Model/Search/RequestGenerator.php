@@ -67,15 +67,16 @@ class RequestGenerator
      */
     protected function generateQuickSearchRequest(): array
     {
-        $response = $this->searchHelper->getAllQuestions();
-        if (empty($response->Questions)) {
+        $allQuestions = $this->searchHelper->getAllQuestions();
+
+        if (empty($allQuestions)) {
             return [];
         }
 
         $request = [];
         $qNames = [];
-        foreach ($response->Questions->children() as $question) {
-            $name = $question->getAttribute('Text');
+        foreach ($allQuestions as $question) {
+            $name = $question->getAttribute('SideText');
             if (in_array($name, $qNames)) {
                 continue;
             }

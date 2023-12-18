@@ -70,7 +70,7 @@
                 </field>
                 <field id="filter_price_type" translate="label" type="multiselect" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Price Filter Type</label>
-                    <source_model>Celebros\ConversionPro\Model\Config\Source\PriceFilterTypes</source_model>
+                    <source_model>Celebros\ConversionPro\Model\Config\Source\RangeFilterTypes</source_model>
                 </field>
                 <field id="filter_price_position" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Price Filter Position</label>

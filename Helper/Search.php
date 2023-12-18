@@ -11,19 +11,15 @@
 
 namespace Celebros\ConversionPro\Helper;
 
-use Celebros\ConversionPro\Helper\Cache as CacheHelper;
+use Celebros\ConversionPro\Model\Config\Source\CategoryQueryType;
+use Celebros\ConversionPro\Model\Config\Source\RangeFilterTypes;
 use Celebros\ConversionPro\Model\Search as SearchModel;
-use Magento\Catalog\Model\Category as CategoryModel;
+use Magento\Catalog\Model\Category;
 use Magento\Framework\App\Helper;
-use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\Http as ResponseHttp;
 use Magento\Framework\DataObject;
-use Magento\Catalog\Model\Category;
-use Celebros\ConversionPro\Model\Config\Source\CategoryQueryType;
-use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Simplexml\Element as XmlElement;
-use Magento\Store\Model\ScopeInterface;
 
 class Search extends Helper\AbstractHelper
 {
@@ -34,6 +30,7 @@ class Search extends Helper\AbstractHelper
     public const CAT_ID_DYN_PROPERTY = 'MagEntityID';
     public const CACHE_ID = 'conversionpro';
     public const REDIRECT_DYNAMIC_PROPERTY_NAME = 'redirection url';
+    public const PRICE_QUESTION_ID = 'PriceQuestion';
     /**#@-*/
 
     /**
@@ -42,7 +39,7 @@ class Search extends Helper\AbstractHelper
     protected $customResultsCache = [];
 
     /**
-     * @var string
+     * @var iterable
      */
     protected $allQuestionsCache;
 
@@ -154,7 +151,7 @@ class Search extends Helper\AbstractHelper
      * Get Custom search results
      *
      * @param DataObject|null $params
-     * @return false|XmlElement|mixed|\SimpleXMLElement
+     * @return false|XmlElement
      * @throws NoSuchEntityException
      */
     public function getCustomResults(DataObject $params = null)
@@ -162,17 +159,17 @@ class Search extends Helper\AbstractHelper
         $params = ($params === null) ? $this->getSearchParams() : clone $params;
 
         // order
-        if (!($this->order === null) && !$params->hasSortBy()) {
+        if ($this->order !== null && !$params->hasSortBy()) {
             $params->setSortBy($this->order);
         }
 
         // page size
-        if (!($this->pageSize === null) && !$params->hasPageSize()) {
+        if ($this->pageSize !== null && !$params->hasPageSize()) {
             $params->setPageSize($this->pageSize);
         }
 
         // current page
-        if (!($this->currentPage === null) && !$params->hasCurrentPage()) {
+        if ($this->currentPage !== null && !$params->hasCurrentPage()) {
             $params->setCurrentPage($this->currentPage - 1);
         }
 
@@ -215,12 +212,12 @@ class Search extends Helper\AbstractHelper
     /**
      * Get all questions
      *
-     * @return false|XmlElement|\SimpleXMLElement|string
+     * @return iterable
      */
-    public function getAllQuestions()
+    public function getAllQuestions(): iterable
     {
         if ($this->allQuestionsCache === null) {
-            $this->allQuestionsCache = $this->search->getAllQuestions();
+            $this->allQuestionsCache = $this->getSearchQuestions($this->search->getAllQuestions());
         }
 
         return $this->allQuestionsCache;
@@ -230,7 +227,7 @@ class Search extends Helper\AbstractHelper
      * Get Question answers
      *
      * @param string $questionId
-     * @return false|XmlElement|mixed|\SimpleXMLElement
+     * @return false|XmlElement
      */
     public function getQuestionAnswers($questionId)
     {
@@ -346,11 +343,12 @@ class Search extends Helper\AbstractHelper
     {
         $requestVar = str_replace('.', '_', $requestVar);
 
-        return [
+        return array_unique([
             $requestVar,
             str_replace(' ', '_', $requestVar),
-            str_replace(' ', '+', $requestVar)
-        ];
+            str_replace(' ', '+', $requestVar),
+            strtolower($requestVar)
+        ]);
     }
 
     /**
@@ -396,15 +394,12 @@ class Search extends Helper\AbstractHelper
      */
     public function getFilterRequestVars()
     {
-        $questions = $this->getAllQuestions();
         $names = ['price'];
-        if (!empty($questions->Questions)) {
-            foreach ($questions->Questions->children() as $question) {
-                $names[] = $question->getAttribute('Text');
-            }
+        foreach ($this->getAllQuestions() as $question) {
+            $names[] = $question->getAttribute('SideText');
         }
 
-        return $names;
+        return array_filter($names);
     }
 
     /**
@@ -465,35 +460,35 @@ class Search extends Helper\AbstractHelper
     /**
      * @param $value
      * @param $field
-     * @return false|XmlElement|\SimpleXMLElement|null
+     * @return XmlElement|null
      */
-    public function getQuestionByField($value, $field)
+    public function getQuestionByField($value, $field): ?XmlElement
     {
-        $allQuestions = $this->getAllQuestions()->Questions->Question;
-        foreach ($allQuestions as $question) {
+        foreach ($this->getAllQuestions() as $question) {
             if (in_array($value, $this->getAltRequestVars($question->getAttribute($field)))) {
                 return $question;
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
-     * @return XmlElement|\SimpleXMLElement|void|null
+     * @return XmlElement|null
      */
-    public function getPriceQuestionMock()
+    public function getPriceQuestionMock(): ?XmlElement
     {
-        $allQuestions = $this->getAllQuestions()->Questions->Question;
-        foreach ($allQuestions as $question) {
+        foreach ($this->getAllQuestions() as $question) {
             $mock = clone $question;
-            $mock->setAttribute('Id', 'PriceQuestion');
+            $mock->setAttribute('Id', self::PRICE_QUESTION_ID);
             $mock->setAttribute('Text', 'By price range');
             $mock->setAttribute('SideText', 'Price');
             $mock->setAttribute('Type', 'Price');
 
             return $mock;
         }
+
+        return null;
     }
 
     /**
@@ -519,52 +514,228 @@ class Search extends Helper\AbstractHelper
     }
 
     /**
-     * Get minimum and maximum prices of price question
+     * Get minimum and maximum values for ranges or price question
      *
-     * @param string|null $val
-     * @return array|false|false[]|int
+     * @param string $questionId
+     * @return array [min, max]
      * @throws NoSuchEntityException
      */
-    public function getMinMaxPrices($val = null)
+    protected function getMinMaxValue(string $questionId): array
     {
-        $result = $val ? false : ['min' => false, 'max' => false];
-        $response = $this->getCustomResults();
-        if (!isset($response->QwiserSearchResults->Questions->Question)) {
-            return $result;
+        $question = $this->getQuestionById($questionId);
+        if (!$question) {
+            return [];
+        }
+
+        $pattern = null;
+        switch ($question->getAttribute('Type')) {
+            case 'Price':
+                $pattern = /** @lang RegExp */ '@^_P(\d+)_(\d+)$@';
+                break;
+            case 'Range':
+                $valueSuffix = $this->getRangeValueSuffix($questionId);
+                if ($valueSuffix) {
+                    $pattern = /** @lang RegExp */ "@^_$valueSuffix(\d+)_(\d+)$@";
+                }
+                break;
+        }
+
+        if (!$pattern) {
+            return [];
         }
 
         $values = [];
-        foreach ($response->QwiserSearchResults->Questions->Question as $question) {
-            if ($question->getAttribute('Id') == 'PriceQuestion') {
-                foreach ($question->Answers->Answer as $answer) {
-                    $id = $answer->getAttribute('Id');
-                    if (preg_match('@^_P(\d+)_(\d+)$@', (string) $id, $matches)) {
-                        $values[] = $matches[1];
-                        $values[] = $matches[2];
-                    }
-                }
+        foreach ($question->Answers->Answer as $answer) {
+            $id = $answer->getAttribute('Id');
+            if (preg_match($pattern, (string) $id, $matches)) {
+                $values[] = (int)$matches[1];
+                $values[] = (int)$matches[2];
             }
         }
 
         if (!count($values)) {
-            return $result;
+            return [];
         }
 
-        switch ($val) {
-            case 'max':
-                $result = (int)max($values);
-                break;
-            case 'min':
-                $result = (int)min($values);
-                break;
-            default:
-                $result = [
-                    'min' => min($values),
-                    'max' => max($values)
-                ];
+        return [min($values), max($values)];
+    }
+
+    /**
+     * Get minimum value for range question
+     *
+     * @param string $questionId
+     * @return false|float
+     * @throws NoSuchEntityException
+     */
+    public function getRangeMinValue(string $questionId)
+    {
+        $value = $this->getMinMaxValue($questionId);
+        if (!count($value)) {
+            return false;
+        }
+        list($min) = $value;
+        return $min;
+    }
+
+    /**
+     * Get maximum value for range question
+     *
+     * @param string $questionId
+     * @return false|float
+     * @throws NoSuchEntityException
+     */
+    public function getRangeMaxValue(string $questionId)
+    {
+        $value = $this->getMinMaxValue($questionId);
+        if (!count($value)) {
+            return false;
+        }
+        list(, $max) = $value;
+        return $max;
+    }
+
+    /**
+     * @param string $questionId
+     * @return string
+     */
+    public function getRangeValueSuffix(string $questionId): string
+    {
+        if ($questionId == self::PRICE_QUESTION_ID) {
+            return 'P';
         }
 
-        return $result;
+        $valueSuffix = '';
+        if (preg_match('@([A-Z]{1,})_Range$@', $questionId, $matches)) {
+            $valueSuffix = $matches[1];
+        }
+        return $valueSuffix;
+    }
+
+    /**
+     * Get Search results
+     *
+     * @param XmlElement $rawResponse
+     * @return XmlElement|null
+     */
+    public function getSearchResults(XmlElement $rawResponse): ?XmlElement
+    {
+        return $rawResponse->QwiserSearchResults ?? null;
+    }
+
+    /**
+     * Get Questions either from SearchResults or GetAllQuestions return value
+     *
+     * @param XmlElement $rawResponse
+     * @return iterable
+     */
+    public function getSearchQuestions(XmlElement $rawResponse): iterable
+    {
+        if (!$rawResponse->Questions->Question) {
+            return [];
+        }
+
+        return $rawResponse->Questions->children() ?? [];
+    }
+
+    /**
+     * Get Products from SearchResults
+     *
+     * @param XmlElement $rawResponse
+     * @return iterable
+     */
+    public function getSearchProducts(XmlElement $rawResponse): iterable
+    {
+        if (!$rawResponse->Products->Product) {
+            return [];
+        }
+
+        return $rawResponse->Products->children() ?? [];
+    }
+
+    /**
+     * @param string $questionId
+     * @return XmlElement|null
+     * @throws NoSuchEntityException
+     */
+    public function getQuestionById(string $questionId): ?XmlElement
+    {
+        $searchResults = $this->getSearchResults($this->getCustomResults());
+        $questions = $this->getSearchQuestions($searchResults);
+
+        foreach ($questions as $question) {
+            if ($question->getAttribute('Id') == $questionId) {
+                return $question;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $questionId
+     * @return string
+     * @throws NoSuchEntityException
+     */
+    public function getRangeQuestionDisplayType(string $questionId): string
+    {
+        $question = $this->getQuestionById($questionId);
+        $type = RangeFilterTypes::DEF;
+        if (!$question) {
+            return $type;
+        }
+
+        if (!in_array($question->getAttribute('Type'),['Price', 'Range'])) {
+            return $type;
+        }
+
+        if ($dynamicProperty = $this->extractDynamicProperty($question, 'RangeDisplay')) {
+            $type = ($dynamicProperty instanceof XmlElement)
+                ? strtolower($dynamicProperty->getAttribute('value'))
+                : $type;
+        }
+        return $type;
+    }
+
+    /**
+     * @param string $questionId
+     * @return bool
+     * @throws NoSuchEntityException
+     */
+    public function isRangeDefault(string $questionId): bool
+    {
+        if ($questionId == self::PRICE_QUESTION_ID) {
+            return $this->helper->isPriceDefault();
+        }
+
+        return $this->getRangeQuestionDisplayType($questionId) == RangeFilterTypes::DEF;
+    }
+
+    /**
+     * @param string $questionId
+     * @return bool
+     * @throws NoSuchEntityException
+     */
+    public function isRangeSlider(string $questionId): bool
+    {
+        if ($questionId == self::PRICE_QUESTION_ID) {
+            return $this->helper->isPriceSlider();
+        }
+
+        return $this->getRangeQuestionDisplayType($questionId) == RangeFilterTypes::SLIDER;
+    }
+
+    /**
+     * @param string $questionId
+     * @return bool
+     * @throws NoSuchEntityException
+     */
+    public function isRangeInputs(string $questionId): bool
+    {
+        if ($questionId == self::PRICE_QUESTION_ID) {
+            return $this->helper->isPriceInputs();
+        }
+
+        return $this->getRangeQuestionDisplayType($questionId) == RangeFilterTypes::INPUTS;
     }
 
     /**

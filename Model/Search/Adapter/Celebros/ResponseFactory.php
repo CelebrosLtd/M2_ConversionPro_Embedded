@@ -11,7 +11,7 @@
 
 namespace Celebros\ConversionPro\Model\Search\Adapter\Celebros;
 
-use Magento\Elasticsearch\SearchAdapter\AggregationFactory;
+use Celebros\ConversionPro\Helper\Search as SearchHelper;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Simplexml\Element as XmlElement;
 use Magento\Framework\App\ProductMetadataInterface;
@@ -35,31 +35,27 @@ class ResponseFactory
      * @var BucketFactory
      */
     private $bucketFactory;
+    /**
+     * @var SearchHelper
+     */
+    private SearchHelper $searchHelper;
 
     /**
      * @param ObjectManagerInterface $objectManager
      * @param DocumentFactory $documentFactory
      * @param BucketFactory $bucketFactory
+     * @param SearchHelper $searchHelper
      */
     public function __construct(
         ObjectManagerInterface $objectManager,
         DocumentFactory $documentFactory,
-        BucketFactory $bucketFactory
+        BucketFactory $bucketFactory,
+        SearchHelper $searchHelper
     ) {
         $this->objectManager = $objectManager;
         $this->documentFactory = $documentFactory;
         $this->bucketFactory = $bucketFactory;
-    }
-
-    /**
-     * Get Search results
-     *
-     * @param XmlElement $rawResponse
-     * @return XmlElement|null
-     */
-    public function getSearchResults($rawResponse): ?XmlElement
-    {
-        return $rawResponse->QwiserSearchResults ?? null;
+        $this->searchHelper = $searchHelper;
     }
 
     /**
@@ -74,20 +70,20 @@ class ResponseFactory
         $buckets = [];
         $total = 0;
 
-        $searchResult = $this->getSearchResults($rawResponse);
+        $searchResult = $this->searchHelper->getSearchResults($rawResponse);
         if ($searchResult) {
-            $products = $searchResult->Products;
+            $products = $this->searchHelper->getSearchProducts($searchResult);
             $entityMapping = $this->prepareEntityRowIdMapping($products);
-            $score = count($products->children());
-            foreach ($products->children() as $rawDocument) {
+            $score = count($products);
+            foreach ($products as $rawDocument) {
                 $entityId = $entityMapping[$rawDocument->getAttribute('MagId')] ?? false;
                 if ($entityId) {
                     $rawDocument->setAttribute('EntityId', $entityId);
                     $documents[] = $this->documentFactory->create($rawDocument, $score--);
                 }
             }
-            $questions = $searchResult->Questions;
-            foreach ($questions->children() as $rawDocument) {
+            $questions = $this->searchHelper->getSearchQuestions($searchResult);
+            foreach ($questions as $rawDocument) {
                 $buckets[] = $this->bucketFactory->create($rawDocument);
             }
 
@@ -110,15 +106,15 @@ class ResponseFactory
     }
 
     /**
-     * Prepapre mapping for a row
+     * Prepare mapping for a row
      *
-     * @param XmlElement $products
+     * @param iterable|XmlElement $products
      * @return array
      */
-    public function prepareEntityRowIdMapping($products)
+    private function prepareEntityRowIdMapping(iterable $products): array
     {
         $ids = [];
-        foreach ($products->children() as $rawDocument) {
+        foreach ($products as $rawDocument) {
             foreach ($rawDocument->Fields->children() as $rawField) {
                 $name = $rawField->getAttribute('name');
                 $value = $rawField->getAttribute('value');
@@ -129,6 +125,10 @@ class ResponseFactory
             }
         }
 
+        if (!count($ids)) {
+            return [];
+        }
+
         $productMetadata = $this->objectManager->get(ProductMetadataInterface::class);
         if ($productMetadata->getEdition() == 'Community') {
             return $ids;
@@ -137,6 +137,7 @@ class ResponseFactory
         $products = $this->objectManager->create(Product::class);
         $collection = $products->getCollection()
             ->addFieldToFilter('row_id', $ids);
+
 
         $mapping = [];
         foreach ($collection as $item) {

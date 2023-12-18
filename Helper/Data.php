@@ -11,12 +11,18 @@
 
 namespace Celebros\ConversionPro\Helper;
 
+use Celebros\Main\Helper\Debug as DebugHelper;
+use Magento\Customer\Api\GroupRepositoryInterface;
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Helper\Context;
 use Magento\Catalog\Model\Category;
+use Magento\Framework\App\State;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
+use Magento\Framework\Registry;
+use Magento\Framework\UrlInterface;
 use Magento\Store\Model\ScopeInterface;
-use Magento\Framework\Message\MessageInterface as MessageInterface;
-use Celebros\ConversionPro\Model\Config\Source\PriceFilterTypes;
+use Celebros\ConversionPro\Model\Config\Source\RangeFilterTypes;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -54,8 +60,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public const RESPONSE_XML_LINK_ATTRIBUTE_NAME = 'Link';
     public const RESPONSE_XML_TITLE_ATTRIBUTE_NAME = 'Title';
     public const RESPONSE_XML_PRICE_ATTRIBUTE_NAME = 'Price';
-    public const PRICE_RANGE_TEMPLATE = 'PRICE_RANGE';
     public const XML_PATH_CUST_GROUP_PRINCIPLES = 'conversionpro/display_settings/principles_cust_group';
+    public const RANGE_ANSWER_PATTERN = /** @lang RegExp */"@^_([A-Z]{1,})(\d+)_(\d+)$@";
 
     protected $permittedHandles = [
         'catalog_category',
@@ -77,7 +83,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $state;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     protected $storeManager;
 
@@ -87,46 +93,46 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $priceHelper;
 
     /**
-     * @var \Magento\Framework\UrlInterface
+     * @var UrlInterface
      */
     protected $url;
 
     /**
-     * @var \Celebros\Main\Helper\Debug
+     * @var DebugHelper
      */
     protected $debug;
 
     /**
-     * @var \Magento\Customer\Model\Session
+     * @var CustomerSession
      */
     protected $customerSession;
 
     /**
-     * @var \Magento\Customer\Api\GroupRepositoryInterface
+     * @var GroupRepositoryInterface
      */
     protected $groupRepository;
 
     /**
      * @param Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\App\State $state
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param Registry $registry
+     * @param State $state
+     * @param StoreManagerInterface $storeManager
      * @param PricingHelper $priceHelper
-     * @param \Magento\Framework\UrlInterface $urlInterface
-     * @param \Celebros\Main\Helper\Debug $debug
-     * @param \Magento\Customer\Model\Session $customerSession
-     * @param \Magento\Customer\Api\GroupRepositoryInterface $groupRepository
+     * @param UrlInterface $urlInterface
+     * @param DebugHelper $debug
+     * @param CustomerSession $customerSession
+     * @param GroupRepositoryInterface $groupRepository
      */
     public function __construct(
         Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\App\State $state,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        Registry $registry,
+        State $state,
+        StoreManagerInterface $storeManager,
         PricingHelper $priceHelper,
-        \Magento\Framework\UrlInterface $urlInterface,
-        \Celebros\Main\Helper\Debug $debug,
-        \Magento\Customer\Model\Session $customerSession,
-        \Magento\Customer\Api\GroupRepositoryInterface $groupRepository
+        UrlInterface $urlInterface,
+        DebugHelper $debug,
+        CustomerSession $customerSession,
+        GroupRepositoryInterface $groupRepository
     ) {
         $this->registry = $registry;
         $this->state = $state;
@@ -568,33 +574,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function isPriceDefault($store = null): bool
     {
-        return in_array(PriceFilterTypes::DEF, $this->getFilterType($store));
+        return in_array(RangeFilterTypes::DEF, $this->getFilterType($store));
     }
 
     public function isPriceSlider($store = null): bool
     {
-        return in_array(PriceFilterTypes::SLIDER, $this->getFilterType($store));
+        return in_array(RangeFilterTypes::SLIDER, $this->getFilterType($store));
     }
 
     public function isPriceInputs($store = null): bool
     {
-        return in_array(PriceFilterTypes::INPUTS, $this->getFilterType($store));
-    }
-
-    public function getPriceUrlTemplate()
-    {
-        $query = [
-            'price' => self::PRICE_RANGE_TEMPLATE
-        ];
-
-        return $this->_urlBuilder->getUrl(
-            '*/*/*',
-            [
-                '_current' => true,
-                '_use_rewrite' => true,
-                '_query' => $query
-            ]
-        );
+        return in_array(RangeFilterTypes::INPUTS, $this->getFilterType($store));
     }
 
     public function isFallbackRedirectEnabled($store = null)
@@ -618,8 +608,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function filterValueToArray($value)
     {
         if (!is_array($value)) {
-            if ($priceValue = $this->validateAndPreparePriceAnswer($value)) {
-                return $priceValue;
+            if ($rangeValue = $this->validateAndPrepareRangeAnswer($value)) {
+                return $rangeValue;
             }
 
             return array_map('intval', explode(',', (string)$value));
@@ -628,14 +618,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return (array)$value;
     }
 
-    public function validateAndPreparePriceAnswer($value)
+    public function validateAndPrepareRangeAnswer($value)
     {
-        $array = explode("_", (string)$value);
-        if (count($array) == 3
-            && (bool)$array[0] == false
-            && strpos($array[1], "P") !== false
-        ) {
-            return [implode("_", $array)];
+        if (preg_match(self::RANGE_ANSWER_PATTERN, $value, $matches)) {
+            if (count($matches) == 4) {
+                return [$value];
+            }
         }
 
         return false;

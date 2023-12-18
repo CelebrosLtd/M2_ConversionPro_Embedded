@@ -94,11 +94,11 @@ class FilterList
     private function getCelebrosFilters(Layer $layer)
     {
         if (!count($this->filters)) {
-            $response = $this->searchHelper->getCustomResults();
-            if (!isset($response->QwiserSearchResults->Questions)) {
+            $searchResults = $this->searchHelper->getSearchResults($this->searchHelper->getCustomResults());
+            $questions = $this->searchHelper->getSearchQuestions($searchResults);
+            if (!count($questions)) {
                 return [];
             }
-            $questions = $response->QwiserSearchResults->Questions;
             $questionsList = $this->sortFilters($questions);
             foreach ($questionsList as $question) {
                 $this->filters[] = $this->createQuestionFilter($question, $layer);
@@ -140,15 +140,15 @@ class FilterList
     /**
      * Sort filters
      *
-     * @param XmlElement $questions
+     * @param iterable $questions
      * @return array
      */
-    private function sortFilters(XmlElement $questions): array
+    private function sortFilters(iterable $questions): array
     {
         $priceSortOrder = $this->helper->getPriceFilterPosition();
         $questionsList = [];
         $sort = 1;
-        foreach ($questions->children() as $question) {
+        foreach ($questions as $question) {
             if ($priceSortOrder == $sort) {
                 $sort++;
             }

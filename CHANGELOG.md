@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 1.6.0 - 2023-12-18
+
+### UPDATES
+- Add Ranges filter type in https://github.com/CelebrosLtd/M2_ConversionPro_Embedded/pull/10
+
+### FIXES
+- fix: fatal error on empty questions search response
+- fix: range filters were not applied in the result
+
 ## 1.5.6 - 2023-09-08
 
 ### FIXES
